@@ -10,7 +10,7 @@ import SwiftUI
 
 @main
 struct TIGWidgetBundle: WidgetBundle {
-    var body: some Widget {
-        TIGWidget()
-    }
+  var body: some Widget {
+    TIGWidget()
+  }
 }

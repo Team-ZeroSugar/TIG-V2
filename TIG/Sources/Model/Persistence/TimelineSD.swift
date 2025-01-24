@@ -22,12 +22,3 @@ final class TimelineSD {
   }
 }
 
-extension TimelineSD {
-  func toEntity() -> Timeline {
-    return Timeline(
-      start: self.start.convertToDateCompontents(),
-      end: self.end.convertToDateCompontents(),
-      isAvailable: self.isAvailable
-    )
-  }
-}
