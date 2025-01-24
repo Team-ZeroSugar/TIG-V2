@@ -7,7 +7,9 @@
 
 import Foundation
 
-@Observable
 final class DIContainer {
+  static let shared = DIContainer()
+  private init() {}
   
+  private let storage = SwiftDataStorage()
 }

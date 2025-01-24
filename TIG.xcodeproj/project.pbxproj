@@ -66,10 +66,6 @@
 				"Resources/Font/Pretendard-Bold.otf",
 				"Resources/Font/Pretendard-Medium.otf",
 				"Resources/Font/Pretendard-SemiBold.otf",
-				Sources/Model/Persistence/DailyContentSD.swift,
-				Sources/Model/Persistence/TimelineSD.swift,
-				Sources/Model/Persistence/WeeklyRepeatSD.swift,
-				Sources/Repository/Storage/SwiftDataStorage.swift,
 			);
 			target = 359369E12C759AEB00BE24FF /* TIGWidgetExtension */;
 		};
@@ -198,7 +194,6 @@
 			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
 				ko,
 			);
