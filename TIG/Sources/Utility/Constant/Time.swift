@@ -10,4 +10,6 @@ import Foundation
 struct Time {
   static let hour = 3600 // 60 * 60
   static let minute = 60
+  
+  static let interval = 1800 // 60 * 30 -> 30분
 }

@@ -6,3 +6,12 @@
 //
 
 import Foundation
+import SwiftData
+
+final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
+  private let modelContext: ModelContext
+  
+  init(modelContext: ModelContext) {
+    self.modelContext = modelContext
+  }
+}
