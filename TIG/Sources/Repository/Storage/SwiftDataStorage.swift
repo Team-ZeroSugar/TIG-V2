@@ -14,12 +14,14 @@ final class SwiftDataStorage {
     let configuration = ModelConfiguration(
       isStoredInMemoryOnly: false
     )
+    
     do {
       let container = try ModelContainer(
         for: schema,
         migrationPlan: MigrationPlan.self,
         configurations: [configuration]
       )
+      
       return ModelContext(container)
     } catch {
       fatalError("ModelContext Error: \(error.localizedDescription)")

@@ -14,6 +14,8 @@ extension SchemaV2 {
   @Model
   final class WeeklyScheduleDTO {
     var day: Int
+    
+    @Relationship(deleteRule: .cascade)
     var timeSlots: [TimeSlotDTO]
     
     init(day: Int, timeSlots: [TimeSlotDTO]) {

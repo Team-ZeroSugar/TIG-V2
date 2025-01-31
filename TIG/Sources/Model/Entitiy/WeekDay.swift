@@ -15,4 +15,16 @@ enum WeekDay: Int, CaseIterable {
   case thu = 4
   case fri = 5
   case sat = 6
+  
+  var text: String {
+    switch self {
+    case .sun: "일"
+    case .mon: "월"
+    case .tue: "화"
+    case .wed: "수"
+    case .thu: "목"
+    case .fri: "금"
+    case .sat: "토"
+    }
+  }
 }
