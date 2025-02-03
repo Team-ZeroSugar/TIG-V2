@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
   var body: some View {
     Text("Hello, World!")
+      .font(.pretendard(size: 16, weight: .regular))
   }
 }
 

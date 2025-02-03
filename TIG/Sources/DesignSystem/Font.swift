@@ -21,7 +21,7 @@ extension Font {
     case thin = "Pretendard-Thin"
   }
   
-  func pretendard(size: CGFloat, weight: Pretendard) -> Font {
+  static func pretendard(size: CGFloat, weight: Pretendard) -> Font {
     return .custom(weight.rawValue, size: size)
   }
 }
