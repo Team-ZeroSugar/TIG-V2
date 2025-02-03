@@ -7,9 +7,21 @@
 
 import Foundation
 
+@Observable
 final class DIContainer {
-  static let shared = DIContainer()
-  private init() {}
+  private let storage: SwiftDataStorage
   
-  private let storage = SwiftDataStorage()
+  private let appConfigRepository: AppConfigRepository
+  private let dailyScheduleRepository: DailyScheduleRepository
+  private let timeSlotRepository: TimeSlotRepository
+  private let weeklyScheduleRepository: WeeklyScheduleRepository
+  
+  init() {
+    self.storage = SwiftDataStorage()
+    
+    self.appConfigRepository = StubAppConfigRepository()
+    self.dailyScheduleRepository = StubDailyScheduleRepository()
+    self.timeSlotRepository = StubTimeSlotRepository()
+    self.weeklyScheduleRepository = StubWeeklyScheduleRepository()
+  }
 }
