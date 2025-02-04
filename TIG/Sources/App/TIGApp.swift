@@ -13,7 +13,7 @@ struct TIGApp: App {
   
   var body: some Scene {
     WindowGroup {
-      MainView()
+      HomeView()
         .environment(container)
     }
   }
