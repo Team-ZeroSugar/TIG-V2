@@ -1,27 +1,26 @@
 //
-//  MainView.swift
+//  ScrollableTabBar.swift
 //  TIG
 //
-//  Created by 이정동 on 1/23/25.
+//  Created by 이정동 on 2/5/25.
 //
 
 import SwiftUI
 
-struct HomeView: View {
-  @State private var homeViewModel = HomeViewModel()
-  var body: some View {
-    NavigationStack {
-      ZStack {
-        Color.gray03.ignoresSafeArea()
-        
-        ScrollableTabBar(homeViewModel: homeViewModel)
-      }
-    }
+enum HomeTab: CaseIterable, Hashable {
+  case available
+  case total
+  
+  var index: Int {
+    self == .available ? 0 : 1
+  }
+  
+  var title: String {
+    self == .available ? "가용시간" : "하루시간"
   }
 }
 
-// MARK: - ScrollableTabBar
-private struct ScrollableTabBar: View {
+struct ScrollableTabBar: View {
   let homeViewModel: HomeViewModel
   @State private var scrollPosition: HomeTab?
   @State private var selectedTabOffset: CGFloat = 0
@@ -110,19 +109,6 @@ private struct ScrollableTabBar: View {
   }
 }
 
-enum HomeTab: CaseIterable, Hashable {
-  case available
-  case total
-  
-  var index: Int {
-    self == .available ? 0 : 1
-  }
-  
-  var title: String {
-    self == .available ? "가용시간" : "하루시간"
-  }
-}
-
 #Preview {
-  HomeView()
+  ScrollableTabBar(homeViewModel: HomeViewModel())
 }
