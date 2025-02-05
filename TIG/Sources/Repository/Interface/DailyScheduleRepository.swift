@@ -22,7 +22,9 @@ protocol DailyScheduleRepository {
   func fetchDailySchedule(date: Date) -> Result<DailySchedule, Error>
   
   /// 기존 일정을 업데이트합니다.
-  /// - Parameter dailySchedule: 업데이트할 `DailySchedule` 객체.
+  /// - Parameters:
+  ///   - dailySchedule: 업데이트할 `DailySchedule` 객체.
+  ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
   func updateDailySchedule(dailySchedule: DailySchedule, timeSlots: [TimeSlot])
   
   /// 특정 일정을 삭제합니다.
