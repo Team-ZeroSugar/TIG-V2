@@ -13,7 +13,6 @@ final class DIContainer {
   
   private let appConfigRepository: AppConfigRepository
   private let dailyScheduleRepository: DailyScheduleRepository
-  private let timeSlotRepository: TimeSlotRepository
   private let weeklyScheduleRepository: WeeklyScheduleRepository
   
   init() {
@@ -21,7 +20,6 @@ final class DIContainer {
     
     self.appConfigRepository = StubAppConfigRepository()
     self.dailyScheduleRepository = StubDailyScheduleRepository()
-    self.timeSlotRepository = StubTimeSlotRepository()
     self.weeklyScheduleRepository = StubWeeklyScheduleRepository()
   }
 }
