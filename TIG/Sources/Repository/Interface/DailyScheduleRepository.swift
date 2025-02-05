@@ -19,7 +19,7 @@ protocol DailyScheduleRepository {
   /// 특정 날짜의 일정을 조회합니다.
   /// - Parameter date: 조회할 날짜.
   /// - Returns: 해당 날짜의 `DailySchedule`
-  func fetchDailySchedule(date: Date) -> Result<DailySchedule, Error>
+  func fetchDailySchedule(date: Date) -> Result<DailySchedule?, Error>
   
   /// 기존 일정을 업데이트합니다.
   /// - Parameters:

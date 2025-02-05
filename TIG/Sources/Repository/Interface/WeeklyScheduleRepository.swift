@@ -20,7 +20,7 @@ protocol WeeklyScheduleRepository {
   /// 특정 요일의 주간 반복 일정을 조회합니다.
   /// - Parameter weekDay: 조회할 요일 (`WeekDay` 타입).
   /// - Returns: 해당 요일의 `WeeklySchedule`
-  func fetchWeeklySchedule(weekDay: WeekDay) -> Result<WeeklySchedule, Error>
+  func fetchWeeklySchedule(weekDay: WeekDay) -> Result<WeeklySchedule?, Error>
   
   /// 기존 주간 반복 일정을 업데이트합니다.
   /// - Parameters:

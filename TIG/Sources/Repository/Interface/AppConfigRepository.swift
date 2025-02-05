@@ -17,7 +17,7 @@ protocol AppConfigRepository {
   func fetchOnboardingStatus() -> Result<Bool, Error>
   
   /// 기상 시간을 업데이트합니다.
-  /// - Parameter time: 설정할 기상 시간 (예: 7 → 오전 7시)
+  /// - Parameter time: 설정할 기상 시간 (예: Time.hour * 7 + Time.minute * 30 → 오전 7시 30분)
   func updateWakeupTime(_ time: Int)
   
   /// 저장된 기상 시간을 가져옵니다.
@@ -25,7 +25,7 @@ protocol AppConfigRepository {
   func fetchWakeupTime() -> Result<Int, Error>
   
   /// 취침 시간을 업데이트합니다.
-  /// - Parameter time: 설정할 취침 시간 (예: 22 → 오후 10시)
+  /// - Parameter time: 설정할 취침 시간 (예: Time.hour * 22 + Time.minute  * 30 → 오후 10시 30분)
   func updateBedTime(_ time: Int)
   
   /// 저장된 취침 시간을 가져옵니다.
