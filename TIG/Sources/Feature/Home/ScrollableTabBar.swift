@@ -45,6 +45,7 @@ struct ScrollableTabBar: View {
         scrollPosition = $1
       }
     }
+    .background(.white)
   }
   
   // MARK: - (F)TabBar Button

@@ -42,7 +42,7 @@ final class HomeViewModel {
         paginateWeek(currentIndex: index)
       }
     case .selectDate(let date):
-      state.currentDate = date
+      state.currentDate = date.formattedDate
     case .tabChange(let tab):
       state.selectedTab = tab
     }

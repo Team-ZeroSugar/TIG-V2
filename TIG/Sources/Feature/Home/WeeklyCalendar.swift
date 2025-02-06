@@ -90,7 +90,7 @@ private struct WeekView: View {
       homeViewModel.state.currentDate == date
       ? .white : .black
     )
-    .frame(width: 40, alignment: .center)
+    .frame(maxWidth: .infinity, alignment: .center)
     .padding(.vertical, 10)
   }
 }
