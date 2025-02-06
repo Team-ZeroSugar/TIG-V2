@@ -12,14 +12,14 @@ struct HomeView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        Color.gray03.ignoresSafeArea()
+        Color.gray01.ignoresSafeArea()
         
-        VStack {
+        VStack(spacing: 0) {
           WeeklyCalendar(homeViewModel: homeViewModel)
+            
           
           ScrollableTabBar(homeViewModel: homeViewModel)
         }
-        
       }
     }
   }

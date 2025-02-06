@@ -27,12 +27,13 @@ struct WeeklyCalendar: View {
           weekSlider: $weekSlider,
           currentWeekIndex: $currentWeekIndex
         )
-        .padding(.horizontal, 20)
+        .padding(.horizontal, LayoutConstant.weekViewHorizontalPadding)
         .tag(index)
       }
     }
     .tabViewStyle(.page(indexDisplayMode: .never))
     .frame(height: 60)
+    .padding(.vertical, 19)
     .onAppear {
       // weekSlider 초기화
       if weekSlider.isEmpty {
@@ -101,12 +102,9 @@ private struct WeekView: View {
         Color.clear
           .preference(key: OffsetKey.self, value: minX)
           .onPreferenceChange(OffsetKey.self) { value in
-            if value.rounded() == 0 && createWeek {
+            if value.rounded() == LayoutConstant.weekViewHorizontalPadding && createWeek {
               paginateWeek()
               createWeek = false
-            } else {
-              print(value.rounded())
-              print(createWeek)
             }
           }
       }

@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Calendar Method
 extension Date {
   static private let configuredCalendar: Calendar = {
     var calendar = Calendar.current
@@ -101,7 +102,7 @@ extension Date {
   }
 }
 
-// MARK: - String Format Method
+// MARK: - DateFormatter Method
 extension Date {
   static private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()

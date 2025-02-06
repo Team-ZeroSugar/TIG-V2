@@ -55,28 +55,24 @@ struct ScrollableTabBar: View {
           homeViewModel.send(.tabChange(tab))
         } label: {
           Text(tab.title)
-            .font(.pretendard(size: 18, weight: .semiBold))
-            .frame(
-              width: (size.width) / 2,
-              height: 40
-            )
-            .padding(.vertical, 12)
+            .font(.pretendard(size: 16, weight: .semiBold))
+            .frame(width: (size.width) / 2)
             .foregroundStyle(
               homeViewModel.state.selectedTab == tab
               ? .gray05
               : .gray02
             )
-            .contentShape(Rectangle())
         }
       }
     }
-    .overlay(alignment: .bottomLeading, content: {
+    .padding(.vertical, 16)
+    .overlay(alignment: .bottom, content: {
       ZStack(alignment: .bottomLeading) {
         Rectangle()
-          .frame(height: 1)
+          .frame(height: 0.5)
           .foregroundStyle(.gray05)
         Rectangle()
-          .frame(width: size.width / 2, height: 4)
+          .frame(width: size.width / 2, height: 2)
           .foregroundStyle(.blueMain)
           .offset(x: selectedTabOffset)
       }
