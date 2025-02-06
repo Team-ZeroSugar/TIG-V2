@@ -17,7 +17,6 @@ struct HomeView: View {
         VStack(spacing: 0) {
           WeeklyCalendar(homeViewModel: homeViewModel)
             
-          
           ScrollableTabBar(homeViewModel: homeViewModel)
         }
       }

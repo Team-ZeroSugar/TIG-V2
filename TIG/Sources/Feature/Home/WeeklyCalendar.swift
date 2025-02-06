@@ -10,51 +10,47 @@ import SwiftUI
 struct WeeklyCalendar: View {
   let homeViewModel: HomeViewModel
   
-  @State private var createWeek: Bool = false
   @State private var currentWeekIndex: Int = 1
-  
-  @State private var weekSlider: [[Date.WeekDay]] = []
   
   var body: some View {
     TabView(selection: $currentWeekIndex) {
-      //      let weekSlider = homeViewModel.state.weekSlider
-      let weekSlider = self.weekSlider
+      let weekSlider = homeViewModel.state.weekSlider
       ForEach(weekSlider.indices, id: \.self) { index in
         WeekView(
           homeViewModel: homeViewModel,
-          week: weekSlider[index],
-          createWeek: $createWeek,
-          weekSlider: $weekSlider,
-          currentWeekIndex: $currentWeekIndex
+          week: weekSlider[index]
         )
-        .padding(.horizontal, LayoutConstant.weekViewHorizontalPadding)
+        .padding(.horizontal, 20)
         .tag(index)
+      }
+      .background {
+        GeometryReader {
+          let minX = $0.frame(in: .global).minX
+          
+          Color.clear
+            .preference(key: OffsetKey.self, value: minX)
+            .onPreferenceChange(OffsetKey.self) { value in
+              if value.rounded() == 0 {
+                paginateWeek()
+              }
+            }
+        }
       }
     }
     .tabViewStyle(.page(indexDisplayMode: .never))
     .frame(height: 60)
     .padding(.vertical, 19)
     .onAppear {
-      // weekSlider 초기화
-      if weekSlider.isEmpty {
-        let currentWeek = Date().weekOfDate
-        
-        if let firstDate = currentWeek.first?.date {
-          weekSlider.append(firstDate.createPreviousWeek())
-        }
-        
-        weekSlider.append(currentWeek)
-        
-        if let lastDate = currentWeek.last?.date {
-          weekSlider.append(lastDate.createNextWeek())
-        }
-      }
+      homeViewModel.send(.onAppear)
     }
-    .onChange(of: currentWeekIndex) {
-      if $1 == 0 || $1 == weekSlider.count - 1{
-        createWeek = true
-      }
-    }
+  }
+  
+  func paginateWeek() {
+    // 현재 WeekSlider의 중간 위치에 있을 경우는 업데이트 X
+    if currentWeekIndex == 1 { return }
+    
+    homeViewModel.send(.moveWeekPeriod(to: currentWeekIndex))
+    currentWeekIndex = 1
   }
 }
 
@@ -62,10 +58,6 @@ private struct WeekView: View {
   
   let homeViewModel: HomeViewModel
   let week: [Date.WeekDay]
-  @Binding var createWeek: Bool
-  
-  @Binding var weekSlider: [[Date.WeekDay]]
-  @Binding var currentWeekIndex: Int
   
   var body: some View {
     HStack(spacing: 9) {
@@ -73,19 +65,7 @@ private struct WeekView: View {
         Button {
           homeViewModel.send(.selectDate(weekDay.date))
         } label: {
-          VStack(spacing: 8) {
-            Text("\(weekDay.date.formattedToString(.weekDay))")
-              .font(.pretendard(size: 12, weight: .medium))
-            Text("\(weekDay.date.day)")
-              .font(.pretendard(size: 16, weight: .semiBold))
-          }
-          .foregroundStyle(
-            homeViewModel.state.currentDate == weekDay.date
-            ? .white : .black
-          )
-          .frame(maxWidth: .infinity, alignment: .center)
-          .padding(.vertical, 10)
-          .padding(.horizontal, 12)
+          dayView(weekDay.date)
         }
         .background {
           if weekDay.date.isSameDate(as: homeViewModel.state.currentDate) {
@@ -95,43 +75,27 @@ private struct WeekView: View {
         }
       }
     }
-    .background {
-      GeometryReader {
-        let minX = $0.frame(in: .global).minX
-        
-        Color.clear
-          .preference(key: OffsetKey.self, value: minX)
-          .onPreferenceChange(OffsetKey.self) { value in
-            if value.rounded() == LayoutConstant.weekViewHorizontalPadding && createWeek {
-              paginateWeek()
-              createWeek = false
-            }
-          }
-      }
-      
-    }
+    .frame(maxWidth: .infinity, alignment: .center)
   }
   
-  func paginateWeek() {
-    if weekSlider.indices.contains(currentWeekIndex) {
-      if let firstDate = weekSlider[currentWeekIndex].first?.date,
-         currentWeekIndex == 0 {
-        weekSlider.insert(firstDate.createPreviousWeek(), at: 0)
-        weekSlider.removeLast()
-        currentWeekIndex = 1
-      }
-      
-      if let lastDate = weekSlider[currentWeekIndex].last?.date,
-         currentWeekIndex == (weekSlider.count - 1) {
-        weekSlider.append(lastDate.createNextWeek())
-        weekSlider.removeFirst()
-        currentWeekIndex = weekSlider.count - 2
-      }
+  @ViewBuilder
+  private func dayView(_ date: Date) -> some View {
+    VStack(spacing: 8) {
+      Text("\(date.formattedToString(.weekDay))")
+        .font(.pretendard(size: 12, weight: .medium))
+      Text("\(date.day)")
+        .font(.pretendard(size: 16, weight: .semiBold))
     }
+    .foregroundStyle(
+      homeViewModel.state.currentDate == date
+      ? .white : .black
+    )
+    .frame(width: 40, alignment: .center)
+    .padding(.vertical, 10)
   }
 }
 
-struct OffsetKey: PreferenceKey {
+private struct OffsetKey: PreferenceKey {
   static var defaultValue: CGFloat = 0
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
     value = nextValue()
