@@ -26,7 +26,7 @@ final class HomeViewModel {
     case moveWeekPeriod(to: Int)
     
     // 탭바 액션
-    case tabChange(HomeTab)
+    case changeTab(HomeTab)
   }
   
   private(set) var state: State = .init()
@@ -44,7 +44,7 @@ final class HomeViewModel {
     case .selectDate(let date):
       state.weekSlider = generateWeekSlider(anchor: date)
       state.currentDate = date.formattedDate
-    case .tabChange(let tab):
+    case .changeTab(let tab):
       state.selectedTab = tab
     }
   }

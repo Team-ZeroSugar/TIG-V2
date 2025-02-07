@@ -38,7 +38,7 @@ struct ScrollableTabBar: View {
         tabBarContent(size: proxy.size)
       }
       .onChange(of: scrollPosition) { _, new in
-        homeViewModel.send(.tabChange(new.unsafelyUnwrapped))
+        homeViewModel.send(.changeTab(new.unsafelyUnwrapped))
         selectedTabOffset = (proxy.size.width / 2) * CGFloat(new?.index ?? 0)
       }
       .onChange(of: homeViewModel.state.selectedTab) {
@@ -53,7 +53,7 @@ struct ScrollableTabBar: View {
     HStack(spacing: 0) {
       ForEach(HomeTab.allCases, id: \.self) { tab in
         Button {
-          homeViewModel.send(.tabChange(tab))
+          homeViewModel.send(.changeTab(tab))
         } label: {
           Text(tab.title)
             .font(.pretendard(size: 16, weight: .semiBold))
