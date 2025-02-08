@@ -33,5 +33,13 @@ extension SchemaV2 {
         isAvailable: data.isAvailable
       )
     }
+    
+    func toEntity() -> TimeSlot {
+      return TimeSlot(
+        start: self.start,
+        end: self.end,
+        isAvailable: self.isAvailable
+      )
+    }
   }
 }

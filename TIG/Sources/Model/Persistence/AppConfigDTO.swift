@@ -30,5 +30,13 @@ extension SchemaV2 {
         isOnboarding: data.isOnboarding
       )
     }
+    
+    func toEntity() -> AppConfig {
+      return AppConfig(
+        wakeupTime: self.wakeupTime,
+        bedTime: self.bedTime,
+        isOnboarding: self.isOnboarding
+      )
+    }
   }
 }

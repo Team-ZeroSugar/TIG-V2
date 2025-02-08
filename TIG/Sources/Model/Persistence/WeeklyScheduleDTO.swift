@@ -31,5 +31,14 @@ extension SchemaV2 {
         }
       )
     }
+    
+    func toEntity() -> WeeklySchedule {
+      return WeeklySchedule(
+        day: WeekDay(rawValue: self.day)!,
+        timeSlots: self.timeSlots
+          .map { $0.toEntity() }
+          .sorted { $0.start < $1.start }
+      )
+    }
   }
 }
