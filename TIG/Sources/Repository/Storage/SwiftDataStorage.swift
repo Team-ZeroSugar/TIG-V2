@@ -28,3 +28,20 @@ final class SwiftDataStorage {
     }
   }()
 }
+
+enum SwiftDataError: LocalizedError {
+  case fetchError
+  case deleteError
+  case modelNotFound
+  
+  var errorDescription: String {
+    switch self {
+    case .fetchError:
+      "Fetch error"
+    case .deleteError:
+      "Delete error"
+    case .modelNotFound:
+      "Model not found"
+    }
+  }
+}
