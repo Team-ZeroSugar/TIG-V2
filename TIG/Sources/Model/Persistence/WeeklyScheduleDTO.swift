@@ -22,5 +22,14 @@ extension SchemaV2 {
       self.day = day
       self.timeSlots = timeSlots
     }
+    
+    convenience init(_ data: WeeklySchedule) {
+      self.init(
+        day: data.day.rawValue,
+        timeSlots: data.timeSlots.map {
+          TimeSlotDTO($0)
+        }
+      )
+    }
   }
 }

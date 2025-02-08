@@ -24,5 +24,14 @@ extension SchemaV2 {
       self.end = end
       self.isAvailable = isAvailable
     }
+    
+    convenience init(_ data: TimeSlot) {
+      self.init(
+        id: data.id,
+        start: data.start,
+        end: data.end,
+        isAvailable: data.isAvailable
+      )
+    }
   }
 }
