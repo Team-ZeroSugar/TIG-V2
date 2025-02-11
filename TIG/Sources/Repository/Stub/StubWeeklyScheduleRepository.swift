@@ -8,5 +8,36 @@
 import Foundation
 
 final class StubWeeklyScheduleRepository: WeeklyScheduleRepository {
+  private var weeklySchedules: [WeeklySchedule] = []
   
+  func initializeWeeklySchedules() {
+    WeekDay.allCases.forEach { day in
+      let schedule = WeeklySchedule(day: day, timeSlots: [])
+      weeklySchedules.append(schedule)
+    }
+  }
+  
+  func fetchAllWeeklySchedules() -> Result<[WeeklySchedule], any Error> {
+    .success(weeklySchedules)
+  }
+  
+  func fetchWeeklySchedule(
+    weekDay: WeekDay
+  ) -> Result<WeeklySchedule?, any Error> {
+    let schedule = weeklySchedules.first { $0.day == weekDay }
+    return .success(schedule)
+  }
+  
+  func updateWeeklySchedule(
+    weeklySchedule: WeeklySchedule,
+    timeSlots: [TimeSlot]
+  ) {
+    if let index = weeklySchedules.firstIndex(
+      where: { $0.day == weeklySchedule.day }
+    ) {
+      var schedule = weeklySchedules[index]
+      schedule.timeSlots = timeSlots
+      weeklySchedules[index] = schedule
+    }
+  }
 }
