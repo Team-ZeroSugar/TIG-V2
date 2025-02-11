@@ -22,21 +22,5 @@ extension SchemaV2 {
       self.bedTime = bedTime
       self.isOnboarding = isOnboarding
     }
-    
-    convenience init(_ data: AppConfig) {
-      self.init(
-        wakeupTime: data.wakeupTime,
-        bedTime: data.bedTime,
-        isOnboarding: data.isOnboarding
-      )
-    }
-    
-    func toEntity() -> AppConfig {
-      return AppConfig(
-        wakeupTime: self.wakeupTime,
-        bedTime: self.bedTime,
-        isOnboarding: self.isOnboarding
-      )
-    }
   }
 }
