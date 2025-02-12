@@ -45,7 +45,8 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
   func fetchWeeklySchedule(weekDay: WeekDay) -> Result<WeeklySchedule?, any Error> {
     print("Impl:", #function)
     
-    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == weekDay.rawValue }
+    let day = weekDay.rawValue
+    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == day }
     let descriptor = FetchDescriptor(predicate: predicate)
     
     do {
@@ -63,11 +64,13 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
   ) {
     print("Impl:", #function)
     
-    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == weeklySchedule.day.rawValue }
+    let day = weeklySchedule.day.rawValue
+    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == day }
     let descriptor = FetchDescriptor(predicate: predicate)
     
     do {
       let data = try modelContext.fetch(descriptor).first
+      data?.timeSlots.forEach { modelContext.delete($0) }
       data?.timeSlots = timeSlots.map { TimeSlotDTO($0) }
     } catch {
       print(error)

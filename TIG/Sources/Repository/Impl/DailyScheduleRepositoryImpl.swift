@@ -67,6 +67,7 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
     
     switch result {
     case .success(let model):
+      model.timeSlots.forEach { modelContext.delete($0) }
       model.timeSlots = timeSlots.map { TimeSlotDTO($0) }
     case .failure(let error):
       print(error)
@@ -94,8 +95,8 @@ extension DailyScheduleRepositoryImpl {
     _ dailySchedule: DailySchedule
   ) -> Result<DailyScheduleDTO, SwiftDataError> {
     print("Impl:", #function)
-    
-    let predicate = #Predicate<DailyScheduleDTO> { $0.date == dailySchedule.date }
+    let date = dailySchedule.date
+    let predicate = #Predicate<DailyScheduleDTO> { $0.date == date }
     let descriptor = FetchDescriptor(predicate: predicate)
     
     do {
