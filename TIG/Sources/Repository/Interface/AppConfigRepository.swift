@@ -9,8 +9,11 @@ import Foundation
 
 protocol AppConfigRepository {
   
-  /// 온보딩을 완료 상태로 설정합니다.
-  func setOnboardingCompleted()
+  /// 온보딩 완료 상태로 전환하며, 동시에 기상 시간과 취침 시간을 저장합니다.
+  /// - Parameters:
+  ///   - wakeupTime: 설정할 기상 시간 (예: Time.hour * 7 + Time.minute * 30 → 오전 7시 30분)
+  ///   - bedTime: 설정할 취침 시간 (예: Time.hour * 22 + Time.minute * 30 → 오후 10시 30분)
+  func setOnboardingCompleted(wakeupTime: Int, bedTime: Int)
   
   /// 현재 온보딩 상태를 가져옵니다.
   /// - Returns: 온보딩 완료 여부

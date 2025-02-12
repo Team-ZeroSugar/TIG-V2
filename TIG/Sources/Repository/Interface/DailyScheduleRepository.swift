@@ -10,7 +10,7 @@ import Foundation
 protocol DailyScheduleRepository {
   
   /// 새로운 일정을 생성합니다.
-  func createDailySchedule()
+  func createDailySchedule(_ dailySchedule: DailySchedule)
   
   /// 저장된 모든 일정을 가져옵니다.
   /// - Returns: 저장된 모든 `DailySchedule`
