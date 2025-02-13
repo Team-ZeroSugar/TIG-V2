@@ -23,7 +23,7 @@ final class HomeViewModel {
     
     // 주간 캘린더 액션
     case selectDate(Date)
-    case moveWeekPeriod(to: Int)
+    case moveWeekPeriod(index: Int)
     
     // 탭바 액션
     case changeTab(HomeTab)

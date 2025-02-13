@@ -45,7 +45,7 @@ struct ScrollableTabBar: View {
         scrollPosition = $1
       }
     }
-    .background(.white)
+    .background(.gray01)
   }
   
   // MARK: - (F)TabBar Button
@@ -60,8 +60,8 @@ struct ScrollableTabBar: View {
             .frame(width: (size.width) / 2)
             .foregroundStyle(
               homeViewModel.state.selectedTab == tab
-              ? .gray05
-              : .gray02
+              ? .gray06
+              : .gray03
             )
         }
       }
@@ -71,7 +71,7 @@ struct ScrollableTabBar: View {
       ZStack(alignment: .bottomLeading) {
         Rectangle()
           .frame(height: 0.5)
-          .foregroundStyle(.gray05)
+          .foregroundStyle(.gray02)
         Rectangle()
           .frame(width: size.width / 2, height: 2)
           .foregroundStyle(.blueMain)
