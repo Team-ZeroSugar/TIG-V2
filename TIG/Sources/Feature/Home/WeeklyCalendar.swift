@@ -49,7 +49,7 @@ struct WeeklyCalendar: View {
     // 현재 WeekSlider의 중간 위치에 있을 경우는 업데이트 X
     if currentWeekIndex == 1 { return }
     
-    homeViewModel.send(.moveWeekPeriod(to: currentWeekIndex))
+    homeViewModel.send(.moveWeekPeriod(index: currentWeekIndex))
     currentWeekIndex = 1
   }
 }
@@ -67,12 +67,6 @@ private struct WeekView: View {
         } label: {
           dayView(weekDay.date)
         }
-        .background {
-          if weekDay.date.isSameDate(as: homeViewModel.state.currentDate) {
-            RoundedRectangle(cornerRadius: 10)
-              .fill(.blueMain)
-          }
-        }
       }
     }
     .frame(maxWidth: .infinity, alignment: .center)
@@ -80,6 +74,10 @@ private struct WeekView: View {
   
   @ViewBuilder
   private func dayView(_ date: Date) -> some View {
+    let isSelected = date.isSameDate(
+      as: homeViewModel.state.currentDate
+    )
+    
     VStack(spacing: 8) {
       Text("\(date.formattedToString(.weekDay))")
         .font(.pretendard(size: 12, weight: .medium))
@@ -88,10 +86,14 @@ private struct WeekView: View {
     }
     .foregroundStyle(
       homeViewModel.state.currentDate == date
-      ? .white : .black
+      ? .gray01 : .gray05
     )
     .frame(maxWidth: .infinity, alignment: .center)
     .padding(.vertical, 10)
+    .background {
+      RoundedRectangle(cornerRadius: 10)
+        .fill(isSelected ? .blueMain : .clear)
+    }
   }
 }
 

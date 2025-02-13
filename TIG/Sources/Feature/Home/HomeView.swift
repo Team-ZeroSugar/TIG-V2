@@ -26,7 +26,7 @@ struct HomeView: View {
           ))
       }
       .ignoresSafeArea(.all, edges: .bottom)
-      .background(.gray02)
+      .background(.blueBg)
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
           calendarButton
@@ -47,20 +47,22 @@ struct HomeView: View {
     }
   }
   
+  @ViewBuilder
   private var calendarButton: some View {
+    let currentDate = homeViewModel.state.currentDate
     Button {
       isPresented = true
     } label: {
       HStack {
-        Text(homeViewModel.state.currentDate.formattedToString(.yearMonth_kr))
+        Text(currentDate.formattedToString(.yearMonth_kr))
           .font(.pretendard(size: 16, weight: .semiBold))
-          .foregroundStyle(.black)
+          .foregroundStyle(.gray06)
         
         Image(systemName: "chevron.down")
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: 15, height: 15)
-          .foregroundColor(.black)
+          .foregroundColor(.gray06)
       }
     }
   }
@@ -84,9 +86,8 @@ struct HomeView: View {
       }
     } label: {
       Image(systemName: "ellipsis")
-        .foregroundStyle(.gray04)
+        .foregroundStyle(.gray06)
     }
-    
   }
 }
 
@@ -123,7 +124,7 @@ private struct CalendarPickerView: View {
       .overlay {
         RoundedRectangle(cornerRadius: 40)
           .stroke(lineWidth: 1)
-          .fill(.blue)
+          .fill(.blueMain)
       }
     }
     .frame(maxHeight: .infinity, alignment: .top)
@@ -137,4 +138,11 @@ private struct CalendarPickerView: View {
 
 #Preview {
   HomeView()
+}
+
+#Preview {
+  CalendarPickerView(
+    homeViewModel: HomeViewModel(),
+    isPresented: .constant(true)
+  )
 }
