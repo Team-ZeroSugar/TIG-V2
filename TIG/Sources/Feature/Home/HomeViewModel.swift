@@ -16,6 +16,9 @@ final class HomeViewModel {
     
     // 탭바 상태
     var selectedTab: HomeTab = .available
+    
+    // 타임 슬롯 상태
+    var timeSlots: [TimeSlot] = TimeSlot.mock
   }
   
   enum Action {
