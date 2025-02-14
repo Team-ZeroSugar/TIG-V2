@@ -15,6 +15,7 @@ struct HomeView: View {
     NavigationStack {
       VStack(spacing: 0) {
         WeeklyCalendar(homeViewModel: homeViewModel)
+          .padding(.top, 6)
         
         ScrollableTabBar(homeViewModel: homeViewModel)
           .clipShape(.rect(

@@ -39,7 +39,7 @@ struct WeeklyCalendar: View {
     }
     .tabViewStyle(.page(indexDisplayMode: .never))
     .frame(height: 60)
-    .padding(.vertical, 19)
+    .padding(.bottom, 19)
     .onAppear {
       homeViewModel.send(.onAppear)
     }
