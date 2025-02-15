@@ -46,6 +46,9 @@ struct HomeView: View {
           .presentationCornerRadius(20)
       }
     }
+    .onAppear {
+      homeViewModel.send(.onAppear)
+    }
   }
   
   @ViewBuilder

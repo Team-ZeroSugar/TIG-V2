@@ -123,3 +123,11 @@ extension Date {
     return Self.dateFormatter.string(from: self)
   }
 }
+
+// MARK: - Time Method
+extension Date {
+  var totalSeconds: Int {
+    let components = self.getDateComponents([.hour, .minute])
+    return Time.hour * components.hour! + Time.minute * components.minute!
+  }
+}
