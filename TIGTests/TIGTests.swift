@@ -34,6 +34,8 @@ final class TIGTests: XCTestCase {
     weeklyScheduleRepository = nil
     try super.tearDownWithError()
   }
+  
+  
   // MARK: - AppConfigRepository 테스트
   func testAppConfigRepository() throws {
     
@@ -100,6 +102,9 @@ final class TIGTests: XCTestCase {
     }
   }
   
-  
+  // MARK: - AppConfigRepository 테스트
+  func testDailyScheduleRepository() throws {
+    
+  }
   
 }

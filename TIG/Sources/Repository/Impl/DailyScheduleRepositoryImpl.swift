@@ -20,8 +20,16 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
   func createDailySchedule(_ dailySchedule: DailySchedule) {
     print("Impl:", #function)
     
-    let model = DailyScheduleDTO(dailySchedule)
-    modelContext.insert(model)
+    let result = findDailySchedule(dailySchedule)
+    switch result {
+    case .success:
+      print(SwiftDataError.modelAlreadyExist)
+    case .failure(.modelNotFound):
+      let model = DailyScheduleDTO(dailySchedule)
+      modelContext.insert(model)
+    case .failure(let error):
+      print(error)
+    }
   }
 
   
