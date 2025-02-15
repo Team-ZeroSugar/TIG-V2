@@ -55,7 +55,7 @@ struct HomeView: View {
       isPresented = true
     } label: {
       HStack {
-        Text(currentDate.formattedToString(.yearMonth_kr))
+        Text(currentDate.string(format: .yearMonth_kr))
           .font(.pretendard(size: 16, weight: .semiBold))
           .foregroundStyle(.gray06)
         

@@ -79,7 +79,7 @@ private struct WeekView: View {
     )
     
     VStack(spacing: 8) {
-      Text("\(date.formattedToString(.weekDay))")
+      Text("\(date.string(format: .weekDay))")
         .font(.pretendard(size: 12, weight: .medium))
       Text("\(date.day)")
         .font(.pretendard(size: 16, weight: .semiBold))

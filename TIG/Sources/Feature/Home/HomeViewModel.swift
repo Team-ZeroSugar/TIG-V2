@@ -19,6 +19,7 @@ final class HomeViewModel {
     
     // 타임 슬롯 상태
     var timeSlots: [TimeSlot] = TimeSlot.mock
+    var currentTimeSlotIndex: Int = 0 // 현재 위치한 타임슬롯 위치
   }
   
   enum Action {
