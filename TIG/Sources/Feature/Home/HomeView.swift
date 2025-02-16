@@ -45,9 +45,12 @@ struct HomeView: View {
           .presentationDetents([.fraction(0.6)])
           .presentationCornerRadius(20)
       }
-    }
-    .onAppear {
-      homeViewModel.send(.onAppear)
+      .onAppear {
+        homeViewModel.send(.onAppear)
+      }
+      .onDisappear {
+        homeViewModel.send(.onDisappear)
+      }
     }
   }
   

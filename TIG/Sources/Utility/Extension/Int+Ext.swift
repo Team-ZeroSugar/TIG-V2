@@ -31,9 +31,9 @@ extension Int {
   private func getAMPMFormat(from totalSeconds: Int) -> String {
     var hours = totalSeconds / Time.hour
     let minutes = totalSeconds % Time.hour / Time.minute
-    let ampm = hours < 12 ? "AM" : "PM"
+    let ampm = (hours < 12 || hours == 24) ? "오전" : "오후"
     hours = hours % 12 == 0 ? 12 : hours % 12
-    return "\(ampm) \(hours):\(minutes)"
+    return "\(ampm) \(hours):\(String(format: "%02d", minutes))"
   }
   
   /// 시간 간격을 표현하는 문자열을 가져옵니다
