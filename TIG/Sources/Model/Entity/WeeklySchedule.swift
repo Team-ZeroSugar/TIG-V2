@@ -12,7 +12,7 @@ struct WeeklySchedule {
   var timeSlots: [TimeSlot]
 }
 
-struct ComparableWeeklySchedule {
+struct ComparableWeeklySchedule: Equatable {
   var day: WeekDay
   var comparableTimeSlots: [ComparableTimeSlot]
 }

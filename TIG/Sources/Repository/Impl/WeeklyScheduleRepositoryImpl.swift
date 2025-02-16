@@ -31,8 +31,8 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
         return
       }
       
-      (1...7).forEach {
-        let model = WeeklyScheduleDTO(day: $0, timeSlots: [])
+      WeekDay.allCases.forEach {
+        let model = WeeklyScheduleDTO(day: $0.rawValue, timeSlots: [])
         modelContext.insert(model)
       }
       

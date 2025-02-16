@@ -47,6 +47,7 @@ final class TIGTests: XCTestCase {
     // 1. 온보딩 완료 설정 및 초기 값 검증
     let initialWakeupTime = 1
     let initialBedTime = 1
+    
     appConfigRepository.setOnboardingCompleted(
       wakeupTime: initialWakeupTime,
       bedTime: initialBedTime
@@ -81,6 +82,7 @@ final class TIGTests: XCTestCase {
     
     // 3. 기상 시간 업데이트 후 검증
     let mockWakeupTime = 20
+    
     appConfigRepository.updateWakeupTime(mockWakeupTime)
     let wakeupTimeFetchResultUpdated = appConfigRepository.fetchWakeupTime()
     switch wakeupTimeFetchResultUpdated {
@@ -92,6 +94,7 @@ final class TIGTests: XCTestCase {
     
     // 4. 취침 시간 업데이트 후 검증
     let mockBedTime = 30
+    
     appConfigRepository.updateBedTime(mockBedTime)
     let bedTimeFetchResultUpdated = appConfigRepository.fetchBedTime()
     switch bedTimeFetchResultUpdated {
@@ -102,9 +105,128 @@ final class TIGTests: XCTestCase {
     }
   }
   
-  // MARK: - AppConfigRepository 테스트
+  // MARK: - DailyScheduleRepository 테스트
   func testDailyScheduleRepository() throws {
+    guard let dailyScheduleRepository = dailyScheduleRepository else {
+      XCTFail("appConfigRepository가 nil입니다.")
+      return
+    }
     
+    // 1. DailySchedule 생성
+    let today = Date()
+    var mokDailySchedule = DailySchedule(
+      date: today,
+      timeSlots: [TimeSlot(start: 1, end: 1, isAvailable: true)]
+    )
+    
+    dailyScheduleRepository.createDailySchedule(mokDailySchedule)
+    
+    // 2. DailySchedule 확인
+    let fetchResultInitial = dailyScheduleRepository.fetchDailySchedule(date: today)
+    switch fetchResultInitial {
+    case .success(let data):
+      guard let data = data else {
+        XCTFail("DailySchedule이 nil 입니다.")
+        return
+      }
+      XCTAssertEqual(mokDailySchedule.comparable, data.comparable, "DailySchedule이 일치하지 않습니다.")
+      
+    case .failure(let error):
+      XCTFail("fetch DailySchedule 실패: \(error)")
+    }
+    
+    // 3. DailySchedule 업데이트
+    let mokTimeSlots = [
+      TimeSlot(start: 1, end: 1, isAvailable: true),
+      TimeSlot(start: 2, end: 2, isAvailable: true)
+    ]
+    dailyScheduleRepository.updateDailySchedule(
+      dailySchedule: mokDailySchedule,
+      timeSlots: mokTimeSlots
+    )
+    
+    // 4. 업데이트 된 DailySchedule 확인
+    mokDailySchedule.timeSlots = mokTimeSlots
+    
+    let fetchResult = dailyScheduleRepository.fetchDailySchedule(date: today)
+    switch fetchResult {
+    case .success(let data):
+      guard let data = data else {
+        XCTFail("DailySchedule이 nil 입니다.")
+        return
+      }
+      XCTAssertEqual(
+        mokDailySchedule.comparable,
+        data.comparable,
+        "DailySchedule이 일치하지 않습니다."
+      )
+    case .failure(let error):
+      XCTFail("fetch DailySchedule 실패: \(error)")
+    }
+    
+    // 5. 모든 dailySchedule 확인
+    let allFetchResult = dailyScheduleRepository.fetchAllDailySchedules()
+    switch allFetchResult {
+    case .success(let datas):
+      print(datas)
+    case .failure(let error):
+      XCTFail("fetch All DailySchedules 실패: \(error)")
+    }
   }
   
+  // MARK: - WeeklyScheduleRepository 테스트
+  func testWeeklyScheduleRepository() throws {
+    guard let weeklyScheduleRepository = weeklyScheduleRepository else {
+      XCTFail("weeklyScheduleRepository가 nil입니다.")
+      return
+    }
+    
+    var allWeeklySchedules: [ComparableWeeklySchedule] = []
+    
+    // 1. WeeklySchedules 초기화
+    weeklyScheduleRepository.initializeWeeklySchedules()
+    
+    // 2. WeeklySchedule 업데이트 및 확인
+    WeekDay.allCases.forEach { weekDay in
+      let mokWeeklySchedule = WeeklySchedule(
+        day: weekDay,
+        timeSlots: [TimeSlot(start: 1, end: 1, isAvailable: true)]
+      )
+      allWeeklySchedules.append(mokWeeklySchedule.comparable)
+      
+      weeklyScheduleRepository.updateWeeklySchedule(
+        weeklySchedule: mokWeeklySchedule,
+        timeSlots: mokWeeklySchedule.timeSlots
+      )
+      
+      let fetchResult = weeklyScheduleRepository.fetchWeeklySchedule(
+        weekDay: weekDay
+      )
+      switch fetchResult {
+      case .success(let data):
+        guard let data = data else {
+          XCTFail("\(weekDay)의 WeeklySchedule이 nil 입니다.")
+          return
+        }
+        XCTAssertEqual(
+          mokWeeklySchedule.comparable,
+          data.comparable,
+          "\(weekDay)의 WeeklySchedule이 일치하지 않습니다."
+        )
+      case .failure(let error):
+        XCTFail("\(weekDay)의 fetch WeeklySchedule 실패: \(error)")
+      }
+    }
+    
+    // 5. 모든 weeklySchedules 확인
+    let allFetchResult = weeklyScheduleRepository.fetchAllWeeklySchedules()
+    switch allFetchResult {
+    case .success(let datas):
+      let comparableDatas = datas.map { $0.comparable }
+      XCTAssertEqual(comparableDatas, allWeeklySchedules, "All WeeklySchedule이 일치하지 않습니다.")
+    case .failure(let error):
+      XCTFail("fetch All WeeklySchedules 실패: \(error)")
+    }
+  }
 }
+
