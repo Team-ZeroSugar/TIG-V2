@@ -8,7 +8,7 @@
 import Foundation
 
 extension Array where Element == TimeSlot {
-  var groupedTimeSlot: [GroupedTimeSlot] {
+  var groupedTimeSlots: [GroupedTimeSlot] {
     var result: [GroupedTimeSlot] = []
     
     if self.isEmpty { return result }

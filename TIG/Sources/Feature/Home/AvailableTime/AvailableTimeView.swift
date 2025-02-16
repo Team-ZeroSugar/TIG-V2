@@ -124,7 +124,7 @@ private struct TimerView: View {
       Text("/ \(totalTime)")
         .font(.pretendard(size: 16, weight: .medium))
         .foregroundStyle(isAvailable ? .gray06 : .gray02)
-      // 중간 텍스트를 중앙에 배치하기 위해 spacing을 동일하게 주고 offset으로 위치 이동
+        // 중간 텍스트를 중앙에 배치하기 위해 spacing을 동일하게 주고 offset으로 위치 이동
         .offset(y: -11)
     }
     // 중간 텍스트가 원 중앙에 배치하기 위함

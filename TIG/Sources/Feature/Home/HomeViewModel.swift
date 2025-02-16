@@ -12,7 +12,7 @@ import Combine
 final class HomeViewModel {
   struct State {
     var timerCancellable: Cancellable?
-    var currentTimeInSeconds: Int = 0
+    var currentTimeInSeconds: Int = Date().totalSeconds
     
     // 주간 캘린더 상태
     var weekSlider: [[Date.WeekDay]] = []
@@ -47,18 +47,22 @@ final class HomeViewModel {
       if state.weekSlider.isEmpty {
         state.weekSlider = generateWeekSlider()
       }
-      startTimer()
-      initializeTimeSlot()
+      handleTimer()
+      initializeTimeSlot(date: state.currentDate)
       
     case .onDisappear:
       stopTimer()
+      
     case .moveWeekPeriod(let index):
       if state.weekSlider.indices.contains(index) {
         paginateWeek(currentIndex: index)
       }
+      
     case .selectDate(let date):
       state.weekSlider = generateWeekSlider(anchor: date)
       state.currentDate = date.formattedDate
+      handleTimer()
+      
     case .changeTab(let tab):
       state.selectedTab = tab
     }
@@ -67,11 +71,21 @@ final class HomeViewModel {
 
 // MARK: - Timer Function
 private extension HomeViewModel {
+  /// 타이머를 조작합니다.
+  /// 현재 선택된 날짜가 오늘 날짜인 경우에만 타이머를 실행하고 그 외 날짜는 타이머 동작을 멈춥니다.
+  func handleTimer() {
+    if state.currentDate.isToday { startTimer() }
+    else { stopTimer() }
+  }
+  
   func startTimer() {
-    state.timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
+    state.timerCancellable = Timer
+      .publish(every: 1, on: .main, in: .common)
       .autoconnect()
       .sink(receiveValue: { [weak self] date in
         self?.state.currentTimeInSeconds = date.totalSeconds
+        
+        // TODO: 현재 위치한 타임 슬롯 가져오는 로직 구현
       })
   }
   
@@ -119,12 +133,13 @@ private extension HomeViewModel {
   }
 }
 
-// MARK: - TimeSlotFunction
+// MARK: - TimeSlot Function
 private extension HomeViewModel {
   /// State 내에 정의된 TimeSlot 변수들을 초기화 합니다
-  func initializeTimeSlot() {
+  func initializeTimeSlot(date: Date) {
+    // TODO: 현재 선택된 날짜에 맞춰 TimeSlot 가져오는 로직 필요
     state.timeSlots = TimeSlot.mock
-    state.groupedTimeSlots = state.timeSlots.groupedTimeSlot
+    state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
     state.currentTimeSlot = getCurrentGroupedTimeSlot()
   }
   
@@ -133,8 +148,13 @@ private extension HomeViewModel {
   func getCurrentGroupedTimeSlot() -> GroupedTimeSlot {
     let now = Date()
     let totalSeconds = now.totalSeconds
+    
+    // TODO: 앱 플로우가 어떻게 이루어지는지 확인 후 수정 필요
+    // 오늘 날짜에 대한 타임 슬롯인 경우 현재 위치한 타임 슬롯 가져오기
+    // ?? 미래 날짜의 타임 슬롯인 경우 첫번째 타임 슬롯 가져오기
+    // ?? 임의의 값
     return state.groupedTimeSlots.first(where: {
       $0.start <= totalSeconds && $0.end > totalSeconds
-    })!
+    }) ?? state.groupedTimeSlots.first ?? GroupedTimeSlot(start: 0, end: 0, isAvailable: false, count: 0)
   }
 }
