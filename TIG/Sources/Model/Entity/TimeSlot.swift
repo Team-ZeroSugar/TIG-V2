@@ -13,3 +13,15 @@ struct TimeSlot {
   var end: Int
   var isAvailable: Bool
 }
+
+struct ComparableTimeSlot: Equatable {
+  var start: Int
+  var end: Int
+  var isAvailable: Bool
+}
+
+extension TimeSlot {
+  var comparable: ComparableTimeSlot {
+    ComparableTimeSlot(start: start, end: end, isAvailable: isAvailable)
+  }
+}
