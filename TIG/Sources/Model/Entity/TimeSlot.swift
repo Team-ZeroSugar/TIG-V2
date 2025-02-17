@@ -7,21 +7,15 @@
 
 import Foundation
 
-struct TimeSlot {
+struct TimeSlot: Equatable {
   var id: String = UUID().uuidString
   var start: Int
   var end: Int
   var isAvailable: Bool
-}
-
-struct ComparableTimeSlot: Equatable {
-  var start: Int
-  var end: Int
-  var isAvailable: Bool
-}
-
-extension TimeSlot {
-  var comparable: ComparableTimeSlot {
-    ComparableTimeSlot(start: start, end: end, isAvailable: isAvailable)
+  
+  static func == (lhs: TimeSlot, rhs: TimeSlot) -> Bool {
+      return lhs.start == rhs.start &&
+             lhs.end == rhs.end &&
+             lhs.isAvailable == rhs.isAvailable
   }
 }

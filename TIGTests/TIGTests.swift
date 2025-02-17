@@ -129,7 +129,7 @@ final class TIGTests: XCTestCase {
         XCTFail("DailySchedule이 nil 입니다.")
         return
       }
-      XCTAssertEqual(mokDailySchedule.comparable, data.comparable, "DailySchedule이 일치하지 않습니다.")
+      XCTAssertEqual(mokDailySchedule, data, "DailySchedule이 일치하지 않습니다.")
       
     case .failure(let error):
       XCTFail("fetch DailySchedule 실패: \(error)")
@@ -155,11 +155,7 @@ final class TIGTests: XCTestCase {
         XCTFail("DailySchedule이 nil 입니다.")
         return
       }
-      XCTAssertEqual(
-        mokDailySchedule.comparable,
-        data.comparable,
-        "DailySchedule이 일치하지 않습니다."
-      )
+      XCTAssertEqual(mokDailySchedule, data, "DailySchedule이 일치하지 않습니다.")
     case .failure(let error):
       XCTFail("fetch DailySchedule 실패: \(error)")
     }
@@ -181,7 +177,7 @@ final class TIGTests: XCTestCase {
       return
     }
     
-    var allWeeklySchedules: [ComparableWeeklySchedule] = []
+    var allWeeklySchedules: [WeeklySchedule] = []
     
     // 1. WeeklySchedules 초기화
     weeklyScheduleRepository.initializeWeeklySchedules()
@@ -192,7 +188,7 @@ final class TIGTests: XCTestCase {
         day: weekDay,
         timeSlots: [TimeSlot(start: 1, end: 1, isAvailable: true)]
       )
-      allWeeklySchedules.append(mokWeeklySchedule.comparable)
+      allWeeklySchedules.append(mokWeeklySchedule)
       
       weeklyScheduleRepository.updateWeeklySchedule(
         weeklySchedule: mokWeeklySchedule,
@@ -208,11 +204,7 @@ final class TIGTests: XCTestCase {
           XCTFail("\(weekDay)의 WeeklySchedule이 nil 입니다.")
           return
         }
-        XCTAssertEqual(
-          mokWeeklySchedule.comparable,
-          data.comparable,
-          "\(weekDay)의 WeeklySchedule이 일치하지 않습니다."
-        )
+        XCTAssertEqual(mokWeeklySchedule, data, "\(weekDay)의 WeeklySchedule이 일치하지 않습니다.")
       case .failure(let error):
         XCTFail("\(weekDay)의 fetch WeeklySchedule 실패: \(error)")
       }
@@ -222,8 +214,7 @@ final class TIGTests: XCTestCase {
     let allFetchResult = weeklyScheduleRepository.fetchAllWeeklySchedules()
     switch allFetchResult {
     case .success(let datas):
-      let comparableDatas = datas.map { $0.comparable }
-      XCTAssertEqual(comparableDatas, allWeeklySchedules, "All WeeklySchedule이 일치하지 않습니다.")
+      XCTAssertEqual(datas, allWeeklySchedules, "All WeeklySchedule이 일치하지 않습니다.")
     case .failure(let error):
       XCTFail("fetch All WeeklySchedules 실패: \(error)")
     }
