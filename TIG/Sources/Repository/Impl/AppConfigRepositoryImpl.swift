@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 final class AppConfigRepositoryImpl: AppConfigRepository {
-
+  
   
   private let modelContext: ModelContext
   
@@ -21,12 +21,20 @@ final class AppConfigRepositoryImpl: AppConfigRepository {
   func setOnboardingCompleted(wakeupTime: Int, bedTime: Int) {
     print("Impl:", #function)
     
-    let model = AppConfigDTO(
-      wakeupTime: wakeupTime,
-      bedTime: bedTime,
-      isOnboarding: true
-    )
-    modelContext.insert(model)
+    let result = getAppConfig()
+    switch result {
+    case .success:
+      print(SwiftDataError.modelAlreadyExist)
+    case .failure(.modelNotFound):
+      let model = AppConfigDTO(
+        wakeupTime: wakeupTime,
+        bedTime: bedTime,
+        isOnboarding: true
+      )
+      modelContext.insert(model)
+    case .failure(let error):
+      print(error)
+    }
   }
   
   
@@ -44,8 +52,8 @@ final class AppConfigRepositoryImpl: AppConfigRepository {
       return .failure(error)
     }
   }
-
-
+  
+  
   func updateWakeupTime(_ time: Int) {
     print("Impl:", #function)
     
@@ -57,7 +65,7 @@ final class AppConfigRepositoryImpl: AppConfigRepository {
       print(error)
     }
   }
-
+  
   
   func fetchWakeupTime() -> Result<Int, any Error> {
     print("Impl:", #function)
@@ -70,7 +78,7 @@ final class AppConfigRepositoryImpl: AppConfigRepository {
       return .failure(error)
     }
   }
-
+  
   
   func updateBedTime(_ time: Int) {
     print("Impl:", #function)
@@ -83,7 +91,7 @@ final class AppConfigRepositoryImpl: AppConfigRepository {
       print(error)
     }
   }
-
+  
   
   func fetchBedTime() -> Result<Int, any Error> {
     print("Impl:", #function)

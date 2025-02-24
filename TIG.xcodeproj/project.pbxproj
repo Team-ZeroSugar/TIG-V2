@@ -20,6 +20,13 @@
 			remoteGlobalIDString = 359369E12C759AEB00BE24FF;
 			remoteInfo = TIGWidgetExtension;
 		};
+		35E93E4D2D5DBB0E008B1C2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 57A98EFC2C3CCAB600863BC6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 57A98F032C3CCAB600863BC6;
+			remoteInfo = TIG;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +47,7 @@
 		359369E22C759AEB00BE24FF /* TIGWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TIGWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		359369E42C759AEB00BE24FF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		359369E62C759AEB00BE24FF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		35E93E492D5DBB0E008B1C2D /* TIGTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TIGTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		57A98F042C3CCAB600863BC6 /* TIG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TIG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -72,6 +80,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		35E93E4A2D5DBB0E008B1C2D /* TIGTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TIGTests; sourceTree = "<group>"; };
 		572B954F2D422B640085A18E /* TIGWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (572B95542D422B640085A18E /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TIGWidget; sourceTree = "<group>"; };
 		572B959A2D422B8E0085A18E /* TIG */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (572B95E42D422B8E0085A18E /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 572B95E52D422B8E0085A18E /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TIG; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -83,6 +92,13 @@
 			files = (
 				359369E72C759AEB00BE24FF /* SwiftUI.framework in Frameworks */,
 				359369E52C759AEB00BE24FF /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35E93E462D5DBB0E008B1C2D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +126,7 @@
 			children = (
 				572B959A2D422B8E0085A18E /* TIG */,
 				572B954F2D422B640085A18E /* TIGWidget */,
+				35E93E4A2D5DBB0E008B1C2D /* TIGTests */,
 				359369E32C759AEB00BE24FF /* Frameworks */,
 				57A98F052C3CCAB600863BC6 /* Products */,
 			);
@@ -122,6 +139,7 @@
 			children = (
 				57A98F042C3CCAB600863BC6 /* TIG.app */,
 				359369E22C759AEB00BE24FF /* TIGWidgetExtension.appex */,
+				35E93E492D5DBB0E008B1C2D /* TIGTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -148,6 +166,29 @@
 			productName = TIGWidgetExtension;
 			productReference = 359369E22C759AEB00BE24FF /* TIGWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		35E93E482D5DBB0E008B1C2D /* TIGTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35E93E4F2D5DBB0E008B1C2D /* Build configuration list for PBXNativeTarget "TIGTests" */;
+			buildPhases = (
+				35E93E452D5DBB0E008B1C2D /* Sources */,
+				35E93E462D5DBB0E008B1C2D /* Frameworks */,
+				35E93E472D5DBB0E008B1C2D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				35E93E4E2D5DBB0E008B1C2D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				35E93E4A2D5DBB0E008B1C2D /* TIGTests */,
+			);
+			name = TIGTests;
+			packageProductDependencies = (
+			);
+			productName = TIGTests;
+			productReference = 35E93E492D5DBB0E008B1C2D /* TIGTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		57A98F032C3CCAB600863BC6 /* TIG */ = {
 			isa = PBXNativeTarget;
@@ -178,11 +219,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					359369E12C759AEB00BE24FF = {
 						CreatedOnToolsVersion = 15.4;
+					};
+					35E93E482D5DBB0E008B1C2D = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 57A98F032C3CCAB600863BC6;
 					};
 					57A98F032C3CCAB600863BC6 = {
 						CreatedOnToolsVersion = 15.4;
@@ -204,12 +249,20 @@
 			targets = (
 				57A98F032C3CCAB600863BC6 /* TIG */,
 				359369E12C759AEB00BE24FF /* TIGWidgetExtension */,
+				35E93E482D5DBB0E008B1C2D /* TIGTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		359369E02C759AEB00BE24FF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35E93E472D5DBB0E008B1C2D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -233,6 +286,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		35E93E452D5DBB0E008B1C2D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		57A98F002C3CCAB600863BC6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -247,6 +307,11 @@
 			isa = PBXTargetDependency;
 			target = 359369E12C759AEB00BE24FF /* TIGWidgetExtension */;
 			targetProxy = 359369F02C759AEC00BE24FF /* PBXContainerItemProxy */;
+		};
+		35E93E4E2D5DBB0E008B1C2D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 57A98F032C3CCAB600863BC6 /* TIG */;
+			targetProxy = 35E93E4D2D5DBB0E008B1C2D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -321,6 +386,44 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		35E93E502D5DBB0E008B1C2D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C3P52YR8KJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shin.TIGTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TIG.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TIG";
+			};
+			name = Debug;
+		};
+		35E93E512D5DBB0E008B1C2D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C3P52YR8KJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shin.TIGTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TIG.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TIG";
 			};
 			name = Release;
 		};
@@ -539,6 +642,15 @@
 			buildConfigurations = (
 				359369F42C759AEC00BE24FF /* Debug */,
 				359369F52C759AEC00BE24FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35E93E4F2D5DBB0E008B1C2D /* Build configuration list for PBXNativeTarget "TIGTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35E93E502D5DBB0E008B1C2D /* Debug */,
+				35E93E512D5DBB0E008B1C2D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

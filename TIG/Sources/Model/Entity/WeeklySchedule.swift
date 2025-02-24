@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct WeeklySchedule {
+struct WeeklySchedule: Equatable {
   var day: WeekDay
   var timeSlots: [TimeSlot]
 }

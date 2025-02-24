@@ -20,9 +20,24 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
   func initializeWeeklySchedules() {
     print("Impl:", #function)
     
-    (1...7).forEach {
-      let model = WeeklyScheduleDTO(day: $0, timeSlots: [])
-      modelContext.insert(model)
+    let descriptor = FetchDescriptor<WeeklyScheduleDTO>()
+    
+    do {
+      let datas = try modelContext.fetch(descriptor)
+      
+      guard datas.isEmpty
+      else {
+        print(SwiftDataError.modelAlreadyExist)
+        return
+      }
+      
+      WeekDay.allCases.forEach {
+        let model = WeeklyScheduleDTO(day: $0.rawValue, timeSlots: [])
+        modelContext.insert(model)
+      }
+      
+    } catch {
+      print(error)
     }
   }
 

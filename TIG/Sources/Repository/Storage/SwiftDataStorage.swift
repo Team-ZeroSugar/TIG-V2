@@ -33,6 +33,7 @@ enum SwiftDataError: LocalizedError {
   case fetchError
   case deleteError
   case modelNotFound
+  case modelAlreadyExist
   
   var errorDescription: String {
     switch self {
@@ -42,6 +43,8 @@ enum SwiftDataError: LocalizedError {
       "Delete error"
     case .modelNotFound:
       "Model not found"
+    case .modelAlreadyExist:
+      "Model already exist"
     }
   }
 }
