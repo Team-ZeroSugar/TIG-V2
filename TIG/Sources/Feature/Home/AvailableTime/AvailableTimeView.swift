@@ -8,11 +8,192 @@
 import SwiftUI
 
 struct AvailableTimeView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  let homeViewModel: HomeViewModel
+  
+  var body: some View {
+    VStack(spacing: 0) {
+      CurrentTimeView(homeViewModel: homeViewModel)
+        .padding(.top, 40)
+      TimerView(homeViewModel: homeViewModel)
+        .padding(.top, 34)
+      FooterView(homeViewModel: homeViewModel)
+        .padding(.top, 36)
     }
+    .frame(maxHeight: .infinity, alignment: .top)
+    .padding(.bottom, 10)
+  }
+}
+
+private struct CurrentTimeView: View {
+  private var startTime: String
+  private var endTime: String
+  private var isAvailable: Bool
+  
+  init(homeViewModel: HomeViewModel) {
+    let currentTimeSlot = homeViewModel.state.currentTimeSlot
+    self.startTime = currentTimeSlot.start.time(format: .ampm_kr)
+    self.endTime = currentTimeSlot.end.time(format: .ampm_kr)
+    self.isAvailable = currentTimeSlot.isAvailable
+  }
+  
+  var body: some View {
+    VStack(spacing: 8) {
+      Text("\(startTime) - \(endTime)")
+        .font(.pretendard(size: 16, weight: .medium))
+        .foregroundStyle(.gray04)
+      
+      HStack(spacing: 0) {
+        Text("지금은 ")
+        Text(isAvailable ? "가용시간" : "비가용시간")
+          .foregroundStyle(isAvailable ? .blueMain : .gray05)
+        Text("이에요")
+      }
+      .font(.pretendard(size: 20, weight: .semiBold))
+      .foregroundStyle(.gray05)
+    }
+  }
+}
+
+private struct TimerView: View {
+  let homeViewModel: HomeViewModel
+  
+  private var remainTime: String {
+    let remainSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
+    return remainSeconds.time(format: .duration_kr)
+  }
+  
+  private var totalTime: String {
+    let totalSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeSlot.start
+    return totalSeconds.time(format: .duration_kr)
+  }
+  
+  private var isAvailable: Bool {
+    homeViewModel.state.currentTimeSlot.isAvailable
+  }
+  
+  private var progressPercent: CGFloat {
+    if !isAvailable { return 1 }
+    
+    let now = homeViewModel.state.currentTimeInSeconds
+    let start = homeViewModel.state.currentTimeSlot.start
+    let end = homeViewModel.state.currentTimeSlot.end
+    return CGFloat(now - start) / CGFloat(end - start)
+  }
+  
+  var body: some View {
+    ZStack {
+      progressCircle
+      
+      progressText
+    }
+    .padding(.horizontal, 41.5)
+  }
+  
+  private var progressCircle: some View {
+    ZStack {
+      Circle()
+        .fill(Color.clear)
+        .overlay(Circle().stroke(.gray02, lineWidth: 10))
+      
+      Circle()
+        .trim(from: progressPercent, to: 1)
+        .stroke(style: StrokeStyle(
+            lineWidth: 10,
+            lineCap: .square,
+            lineJoin: .round
+        ))
+        .rotationEffect(.degrees(-90))
+        .foregroundStyle(.blueMain)
+    }
+  }
+  
+  private var progressText: some View {
+    VStack(spacing: 17) {
+      Text(isAvailable ? "남은 가용시간" : "다음 가용시간")
+        .font(.pretendard(size: 12, weight: .medium))
+        .foregroundStyle(.gray01)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 12.5)
+        .background(isAvailable ? .blueMain : .gray02)
+        .clipShape(Capsule())
+      
+      Text(remainTime)
+        .font(.pretendard(size: 36, weight: .semiBold))
+        .foregroundStyle(isAvailable ? .blueMain : .gray02)
+      
+      Text("/ \(totalTime)")
+        .font(.pretendard(size: 16, weight: .medium))
+        .foregroundStyle(isAvailable ? .gray06 : .gray02)
+        // 중간 텍스트를 중앙에 배치하기 위해 spacing을 동일하게 주고 offset으로 위치 이동
+        .offset(y: -11)
+    }
+    // 중간 텍스트가 원 중앙에 배치하기 위함
+    // 상단, 하단에 위치한 텍스트의 높이가 각각 26, 19로 다름
+    // 상단 텍스트가 7만큼 더 높이가 크기 때문에 그 절반만큼 뷰를 위로 옮김
+    .offset(y: -3.5)
+  }
+}
+
+private struct FooterView: View {
+  let homeViewModel: HomeViewModel
+  
+  private var remainTime: String {
+    let now = homeViewModel.state.currentTimeInSeconds
+    return homeViewModel.state.groupedTimeSlots
+      .filter { $0.isAvailable && now < $0.end }
+      .reduce(0) {
+        let anchor = max(now, $1.start)
+        return $0 + ($1.end - anchor)
+      }
+      .time(format: .duration_kr)
+  }
+  
+  private var totalTime: String {
+    homeViewModel.state.timeSlots
+      .filter { $0.isAvailable }
+      .reduce(0) { result, _ in result + Time.interval }
+      .time(format: .duration_kr)
+  }
+  
+  var body: some View {
+    HStack {
+      VStack(alignment: .leading, spacing: 5) {
+        Text("하루 가용시간")
+          .font(.pretendard(size: 12, weight: .regular))
+        Text("\(remainTime) / \(totalTime)")
+          .font(.pretendard(size: 16, weight: .semiBold))
+      }
+      .foregroundStyle(.gray04)
+      
+      Spacer()
+      
+      Button {
+        
+      } label: {
+        Text("시간 수정")
+          .foregroundStyle(.blueMain)
+          .font(.pretendard(size: 14, weight: .medium))
+      }
+      .padding(.vertical, 10)
+      .padding(.horizontal, 18)
+      .background(.blueButton)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+    .padding(.horizontal, 20)
+    .padding(.vertical, 22)
+    .overlay {
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(lineWidth: 1)
+        .fill(.blueStroke)
+    }
+    .padding(.horizontal, 20)
+  }
 }
 
 #Preview {
-    AvailableTimeView()
+  HomeView()
+}
+
+#Preview {
+  AvailableTimeView(homeViewModel: HomeViewModel())
 }

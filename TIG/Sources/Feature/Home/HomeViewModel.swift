@@ -6,20 +6,30 @@
 //
 
 import Foundation
+import Combine
 
 @Observable
 final class HomeViewModel {
   struct State {
+    var timerCancellable: Cancellable?
+    var currentTimeInSeconds: Int = Date().totalSeconds
+    
     // 주간 캘린더 상태
     var weekSlider: [[Date.WeekDay]] = []
     var currentDate: Date = Date().formattedDate
     
     // 탭바 상태
     var selectedTab: HomeTab = .available
+    
+    // 타임 슬롯 상태
+    var timeSlots: [TimeSlot] = []
+    var groupedTimeSlots: [GroupedTimeSlot] = []
+    var currentTimeSlot: GroupedTimeSlot = .init(start: 0, end: 0, isAvailable: false, count: 0)
   }
   
   enum Action {
     case onAppear
+    case onDisappear
     
     // 주간 캘린더 액션
     case selectDate(Date)
@@ -37,25 +47,59 @@ final class HomeViewModel {
       if state.weekSlider.isEmpty {
         state.weekSlider = generateWeekSlider()
       }
+      handleTimer()
+      initializeTimeSlot(date: state.currentDate)
+      
+    case .onDisappear:
+      stopTimer()
+      
     case .moveWeekPeriod(let index):
       if state.weekSlider.indices.contains(index) {
         paginateWeek(currentIndex: index)
       }
+      
     case .selectDate(let date):
       state.weekSlider = generateWeekSlider(anchor: date)
       state.currentDate = date.formattedDate
+      handleTimer()
+      
     case .changeTab(let tab):
       state.selectedTab = tab
     }
   }
 }
 
-// MARK: - Function
-extension HomeViewModel {
+// MARK: - Timer Function
+private extension HomeViewModel {
+  /// 타이머를 조작합니다.
+  /// 현재 선택된 날짜가 오늘 날짜인 경우에만 타이머를 실행하고 그 외 날짜는 타이머 동작을 멈춥니다.
+  func handleTimer() {
+    if state.currentDate.isToday { startTimer() }
+    else { stopTimer() }
+  }
+  
+  func startTimer() {
+    state.timerCancellable = Timer
+      .publish(every: 1, on: .main, in: .common)
+      .autoconnect()
+      .sink(receiveValue: { [weak self] date in
+        self?.state.currentTimeInSeconds = date.totalSeconds
+        
+        // TODO: 현재 위치한 타임 슬롯 가져오는 로직 구현
+      })
+  }
+  
+  func stopTimer() {
+    state.timerCancellable?.cancel()
+  }
+}
+
+// MARK: - Weekly Calendar Function
+private extension HomeViewModel {
   /// 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음을 생성
   /// - Parameter date: 기준이 되는 날짜
   /// - Returns: 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음
-  private func generateWeekSlider(anchor date: Date = .now) -> [[Date.WeekDay]] {
+  func generateWeekSlider(anchor date: Date = .now) -> [[Date.WeekDay]] {
     var newWeeks = [[Date.WeekDay]]()
     let anchorWeek = date.weekOfDate
     
@@ -74,7 +118,7 @@ extension HomeViewModel {
   
   /// 현재 주간 캘린더 위치가 weekSlider의 첫번째 또는 마지막인 경우 새로 생성
   /// - Parameter currentIndex: 현재 위치한 주간 캘린더 인덱스
-  private func paginateWeek(currentIndex: Int) {
+  func paginateWeek(currentIndex: Int) {
     if let firstDate = state.weekSlider[currentIndex].first?.date,
        currentIndex == 0 {
       state.weekSlider.insert(firstDate.createPreviousWeek(), at: 0)
@@ -89,3 +133,28 @@ extension HomeViewModel {
   }
 }
 
+// MARK: - TimeSlot Function
+private extension HomeViewModel {
+  /// State 내에 정의된 TimeSlot 변수들을 초기화 합니다
+  func initializeTimeSlot(date: Date) {
+    // TODO: 현재 선택된 날짜에 맞춰 TimeSlot 가져오는 로직 필요
+    state.timeSlots = TimeSlot.mock
+    state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
+    state.currentTimeSlot = getCurrentGroupedTimeSlot()
+  }
+  
+  /// 현재 시간대에 위치한 그룹화된 TimeSlot을 가져옵니다
+  /// - Returns: 현재 시간대에 위치한 GroupedTimeSlot
+  func getCurrentGroupedTimeSlot() -> GroupedTimeSlot {
+    let now = Date()
+    let totalSeconds = now.totalSeconds
+    
+    // TODO: 앱 플로우가 어떻게 이루어지는지 확인 후 수정 필요
+    // 오늘 날짜에 대한 타임 슬롯인 경우 현재 위치한 타임 슬롯 가져오기
+    // ?? 미래 날짜의 타임 슬롯인 경우 첫번째 타임 슬롯 가져오기
+    // ?? 임의의 값
+    return state.groupedTimeSlots.first(where: {
+      $0.start <= totalSeconds && $0.end > totalSeconds
+    }) ?? state.groupedTimeSlots.first ?? GroupedTimeSlot(start: 0, end: 0, isAvailable: false, count: 0)
+  }
+}

@@ -104,22 +104,30 @@ extension Date {
 
 // MARK: - DateFormatter Method
 extension Date {
+  enum DateFormatType: String {
+    case yearMonth_kr = "yyyy년 M월"
+    case weekDay = "E"
+  }
+  
   static private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "ko_KR")
     return formatter
   }()
   
-  enum DateFormatType: String {
-    case yearMonth_kr = "yyyy년 M월"
-    case weekDay = "E"
-  }
-  
   /// Date를 String Format으로 변환합니다
   /// - Parameter dateFormatType: 변환하고 싶은 dateFormat 타입
   /// - Returns: 변환된 String 값
-  func formattedToString(_ dateFormatType: DateFormatType) -> String {
+  func string(format dateFormatType: DateFormatType) -> String {
     Self.dateFormatter.dateFormat = dateFormatType.rawValue
     return Self.dateFormatter.string(from: self)
+  }
+}
+
+// MARK: - Time Method
+extension Date {
+  var totalSeconds: Int {
+    let components = self.getDateComponents([.hour, .minute])
+    return Time.hour * components.hour! + Time.minute * components.minute!
   }
 }

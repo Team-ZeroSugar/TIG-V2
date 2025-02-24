@@ -39,10 +39,7 @@ struct WeeklyCalendar: View {
     }
     .tabViewStyle(.page(indexDisplayMode: .never))
     .frame(height: 60)
-    .padding(.vertical, 19)
-    .onAppear {
-      homeViewModel.send(.onAppear)
-    }
+    .padding(.bottom, 19)
   }
   
   func paginateWeek() {
@@ -79,7 +76,7 @@ private struct WeekView: View {
     )
     
     VStack(spacing: 8) {
-      Text("\(date.formattedToString(.weekDay))")
+      Text("\(date.string(format: .weekDay))")
         .font(.pretendard(size: 12, weight: .medium))
       Text("\(date.day)")
         .font(.pretendard(size: 16, weight: .semiBold))

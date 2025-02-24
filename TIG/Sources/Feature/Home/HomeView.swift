@@ -15,6 +15,7 @@ struct HomeView: View {
     NavigationStack {
       VStack(spacing: 0) {
         WeeklyCalendar(homeViewModel: homeViewModel)
+          .padding(.top, 6)
         
         ScrollableTabBar(homeViewModel: homeViewModel)
           .clipShape(.rect(
@@ -44,6 +45,12 @@ struct HomeView: View {
           .presentationDetents([.fraction(0.6)])
           .presentationCornerRadius(20)
       }
+      .onAppear {
+        homeViewModel.send(.onAppear)
+      }
+      .onDisappear {
+        homeViewModel.send(.onDisappear)
+      }
     }
   }
   
@@ -54,7 +61,7 @@ struct HomeView: View {
       isPresented = true
     } label: {
       HStack {
-        Text(currentDate.formattedToString(.yearMonth_kr))
+        Text(currentDate.string(format: .yearMonth_kr))
           .font(.pretendard(size: 16, weight: .semiBold))
           .foregroundStyle(.gray06)
         

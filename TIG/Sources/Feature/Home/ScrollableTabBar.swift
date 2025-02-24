@@ -89,7 +89,7 @@ struct ScrollableTabBar: View {
           VStack {
             switch tab {
             case .available:
-              Text("가용시간")
+              AvailableTimeView(homeViewModel: homeViewModel)
             case .total:
               Text("하루시간")
             }
