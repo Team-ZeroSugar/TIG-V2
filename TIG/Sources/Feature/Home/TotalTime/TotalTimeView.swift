@@ -16,27 +16,43 @@ struct TotalTimeView: View {
     let groupedTimeSlots = homeViewModel.state.groupedTimeSlots
     ScrollView {
       HStack {
-        VStack {
-          ForEach(0..<48) { index in
-            let meridiemText = (index / 2) < 12 ? "오전" : "오후"
-            let hour = (index / 2) % 12 == 0 ? 12 : (index / 2) % 12
-            HStack {
-              Text("\(meridiemText) \(hour)")
-                .font(.pretendard(size: 12, weight: .medium))
-                .foregroundStyle(.gray03)
-                .frame(width: 47, height: 14, alignment: .leading)
-                .opacity(index % 2 == 0 ? 1 : 0)
-            }
-          }
-        }
+        
+        TimeIndicatorView()
+        
         VStack {
           ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
             
           }
         }
       }
-    }.onAppear {
+    }
+    .scrollIndicators(.hidden)
+    .onAppear {
       homeViewModel.send(.onAppear)
+    }
+  }
+}
+
+fileprivate struct TimeIndicatorView: View {
+  var body: some View {
+    VStack(alignment: .trailing, spacing: 39) {
+      ForEach(0..<49) { idx in
+        let meridiemText = (idx / 2) < 12 ? "오전" : "오후"
+        let hour = (idx / 2) % 12 == 0 ? 12 : (idx / 2) % 12
+        HStack(alignment: .top) {
+          
+          Text("\(meridiemText) \(hour)시")
+            .font(.pretendard(size: 12, weight: .medium))
+            .foregroundStyle(.gray03)
+            .frame(width: 47, height: 14, alignment: .leading)
+            .opacity(idx % 2 == 0 ? 1 : 0)
+            .offset(y: -7)
+          
+          Rectangle()
+            .frame(width: idx % 2 == 0 ? 24 : 16, height: 1)
+            .foregroundStyle(.gray02)
+        }
+      }
     }
   }
 }
