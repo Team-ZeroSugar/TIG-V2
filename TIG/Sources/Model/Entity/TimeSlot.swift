@@ -20,7 +20,7 @@ struct TimeSlot: Equatable {
   }
 }
 
-struct GroupedTimeSlot {
+struct GroupedTimeSlot: Hashable {
   var start: Int
   var end: Int
   var isAvailable: Bool

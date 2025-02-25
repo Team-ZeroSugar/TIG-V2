@@ -8,11 +8,39 @@
 import SwiftUI
 
 struct TotalTimeView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  
+  let homeViewModel: HomeViewModel
+  
+  var body: some View {
+    
+    let groupedTimeSlots = homeViewModel.state.groupedTimeSlots
+    ScrollView {
+      HStack {
+        VStack {
+          ForEach(0..<48) { index in
+            let meridiemText = (index / 2) < 12 ? "오전" : "오후"
+            let hour = (index / 2) % 12 == 0 ? 12 : (index / 2) % 12
+            HStack {
+              Text("\(meridiemText) \(hour)")
+                .font(.pretendard(size: 12, weight: .medium))
+                .foregroundStyle(.gray03)
+                .frame(width: 47, height: 14, alignment: .leading)
+                .opacity(index % 2 == 0 ? 1 : 0)
+            }
+          }
+        }
+        VStack {
+          ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
+            
+          }
+        }
+      }
+    }.onAppear {
+      homeViewModel.send(.onAppear)
     }
+  }
 }
 
 #Preview {
-    TotalTimeView()
+  TotalTimeView(homeViewModel: HomeViewModel())
 }
