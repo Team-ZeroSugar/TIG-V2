@@ -62,6 +62,7 @@ final class HomeViewModel {
       state.weekSlider = generateWeekSlider(anchor: date)
       state.currentDate = date.formattedDate
       handleTimer()
+      initializeTimeSlot(date: date)
       
     case .changeTab(let tab):
       state.selectedTab = tab
@@ -83,14 +84,34 @@ private extension HomeViewModel {
       .publish(every: 1, on: .main, in: .common)
       .autoconnect()
       .sink(receiveValue: { [weak self] date in
-        self?.state.currentTimeInSeconds = date.totalSeconds
-        
-        // TODO: 현재 위치한 타임 슬롯 가져오는 로직 구현
+        self?.processTimerTask(date: date)
       })
   }
   
   func stopTimer() {
     state.timerCancellable?.cancel()
+  }
+  
+  // TODO: 수정 필요
+  func processTimerTask(date: Date) {
+    // 현재 선택된 날짜가 현재 날짜와 다른 경우 TimeSlot 업데이트
+    if state.currentDate != date.formattedDate {
+      initializeTimeSlot(date: date)
+    }
+    
+    // 현재 선택된 날짜 업데이트
+    state.currentDate = date.formattedDate
+    
+    // 현재 시간(초) 업데이트
+    let currentSeconds = date.totalSeconds
+    state.currentTimeInSeconds = currentSeconds
+    
+    // 현재 위치한 타임 슬롯 업데이트
+    guard let currentTimeSlot = state.groupedTimeSlots.first(where: {
+      $0.start <= currentSeconds && currentSeconds < $0.end
+    }) else { return }
+    
+    state.currentTimeSlot = currentTimeSlot
   }
 }
 
@@ -138,7 +159,13 @@ private extension HomeViewModel {
   /// State 내에 정의된 TimeSlot 변수들을 초기화 합니다
   func initializeTimeSlot(date: Date) {
     // TODO: 현재 선택된 날짜에 맞춰 TimeSlot 가져오는 로직 필요
-    state.timeSlots = TimeSlot.mock
+    // 1. 현재 선택된 날짜의 DailySchedule 가져오기
+    // 2. 만약 없다면 WeeklySchedule을 통해 생성
+    // 3. WeeklySchedule 또한 없다면 기상, 수면시간에 맞춰 생성
+    // 현재는 Test
+    let now = Date().formattedDate
+    let mock = now == date.formattedDate ? TimeSlot.mock : TimeSlot.mock.map { TimeSlot(start: $0.start, end: $0.end, isAvailable: Bool.random()) }
+    state.timeSlots = mock
     state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
     state.currentTimeSlot = getCurrentGroupedTimeSlot()
   }
@@ -149,10 +176,6 @@ private extension HomeViewModel {
     let now = Date()
     let totalSeconds = now.totalSeconds
     
-    // TODO: 앱 플로우가 어떻게 이루어지는지 확인 후 수정 필요
-    // 오늘 날짜에 대한 타임 슬롯인 경우 현재 위치한 타임 슬롯 가져오기
-    // ?? 미래 날짜의 타임 슬롯인 경우 첫번째 타임 슬롯 가져오기
-    // ?? 임의의 값
     return state.groupedTimeSlots.first(where: {
       $0.start <= totalSeconds && $0.end > totalSeconds
     })!

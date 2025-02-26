@@ -9,13 +9,18 @@ import SwiftUI
 
 struct AvailableTimeView: View {
   let homeViewModel: HomeViewModel
+  private var isToday: Bool {
+    homeViewModel.state.currentDate.isToday
+  }
   
   var body: some View {
     VStack(spacing: 0) {
-      HeaderView(homeViewModel: homeViewModel)
-        .padding(.top, 40)
-      TimerView(homeViewModel: homeViewModel)
-        .padding(.top, 34)
+      if isToday {
+        HeaderView(homeViewModel: homeViewModel)
+          .padding(.top, 40)
+        TimerView(homeViewModel: homeViewModel)
+          .padding(.top, 34)
+      }
       FooterView(homeViewModel: homeViewModel)
         .padding(.top, 36)
     }
@@ -54,6 +59,7 @@ private struct HeaderView: View {
   }
 }
 
+// TODO: 수정 필요
 private struct TimerView: View {
   let homeViewModel: HomeViewModel
   
@@ -197,13 +203,24 @@ private struct FooterView: View {
       .time(format: .duration_kr)
   }
   
+  private var isToday: Bool {
+    homeViewModel.state.currentDate.isToday
+  }
+  
   var body: some View {
     HStack {
       VStack(alignment: .leading, spacing: 5) {
         Text("하루 가용시간")
           .font(.pretendard(size: 12, weight: .regular))
-        Text("\(remainTime) / \(totalTime)")
-          .font(.pretendard(size: 16, weight: .semiBold))
+        
+        HStack(spacing: 0) {
+          if isToday {
+            Text("\(remainTime)")
+            Text(" / ")
+          }
+          Text("\(totalTime)")
+        }
+        .font(.pretendard(size: 16, weight: .semiBold))
       }
       .foregroundStyle(.gray04)
       

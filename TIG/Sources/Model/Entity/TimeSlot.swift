@@ -65,7 +65,7 @@ extension TimeSlot {
     TimeSlot(start: 960 * 60, end: 990 * 60, isAvailable: true),
     TimeSlot(start: 990 * 60, end: 1020 * 60, isAvailable: true),
     TimeSlot(start: 1020 * 60, end: 1050 * 60, isAvailable: true),
-    TimeSlot(start: 1050 * 60, end: 1080 * 60, isAvailable: true),
+    TimeSlot(start: 1050 * 60, end: 1080 * 60, isAvailable: false),
     TimeSlot(start: 1080 * 60, end: 1110 * 60, isAvailable: true),
     TimeSlot(start: 1110 * 60, end: 1140 * 60, isAvailable: true),
     TimeSlot(start: 1140 * 60, end: 1170 * 60, isAvailable: true),
