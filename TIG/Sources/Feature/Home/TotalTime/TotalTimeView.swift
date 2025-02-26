@@ -12,19 +12,17 @@ struct TotalTimeView: View {
   let homeViewModel: HomeViewModel
   
   var body: some View {
-    
-    let groupedTimeSlots = homeViewModel.state.groupedTimeSlots
     ScrollView {
-      HStack {
+      HStack(alignment: .top, spacing: 25) {
         
         TimeIndicatorView()
         
-        VStack {
-          ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
-            
-          }
-        }
-      }
+        GroupedTimeSlotsView(
+          groupedTimeSlots: homeViewModel.state.groupedTimeSlots
+        )
+        
+        
+      }.padding(.horizontal, 20)
     }
     .scrollIndicators(.hidden)
     .onAppear {
@@ -33,9 +31,9 @@ struct TotalTimeView: View {
   }
 }
 
-fileprivate struct TimeIndicatorView: View {
+private struct TimeIndicatorView: View {
   var body: some View {
-    VStack(alignment: .trailing, spacing: 39) {
+    VStack(alignment: .leading, spacing: 25) {
       ForEach(0..<49) { idx in
         let meridiemText = (idx / 2) < 12 ? "오전" : "오후"
         let hour = (idx / 2) % 12 == 0 ? 12 : (idx / 2) % 12
@@ -54,6 +52,37 @@ fileprivate struct TimeIndicatorView: View {
         }
       }
     }
+  }
+}
+
+private struct GroupedTimeSlotsView: View {
+  
+  let groupedTimeSlots: [GroupedTimeSlot]
+  
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
+        
+        let height = Double(groupedTimeSlot.count) * 39.0 - 8
+        
+        if groupedTimeSlot.isAvailable {
+            RoundedRectangle(cornerRadius: 8)
+              .foregroundStyle(.blueTimeSlot)
+              .frame(width: .infinity, height: height)
+              .padding(.vertical, 4)
+        } else {
+          HStack(alignment: .top) {
+            RoundedRectangle(cornerRadius: 8)
+              .foregroundStyle(.blueTimeSlot)
+              .frame(width: 4, height: height)
+              .padding(.vertical, 4)
+            Text("비가용 시간(30분)")
+              .padding(.leading, 15)
+              .padding(.top, 6)
+          }
+        }
+      }
+    }.frame(maxWidth: .infinity)
   }
 }
 
