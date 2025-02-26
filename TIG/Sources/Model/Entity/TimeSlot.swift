@@ -24,6 +24,7 @@ struct GroupedTimeSlot {
   var start: Int
   var end: Int
   var isAvailable: Bool
+  var duration: Int
   var count: Int
 }
 

@@ -24,7 +24,7 @@ final class HomeViewModel {
     // 타임 슬롯 상태
     var timeSlots: [TimeSlot] = []
     var groupedTimeSlots: [GroupedTimeSlot] = []
-    var currentTimeSlot: GroupedTimeSlot = .init(start: 0, end: 0, isAvailable: false, count: 0)
+    var currentTimeSlot: GroupedTimeSlot = .init(start: 0, end: 0, isAvailable: false, duration: 0, count: 0)
   }
   
   enum Action {
@@ -155,6 +155,6 @@ private extension HomeViewModel {
     // ?? 임의의 값
     return state.groupedTimeSlots.first(where: {
       $0.start <= totalSeconds && $0.end > totalSeconds
-    }) ?? state.groupedTimeSlots.first ?? GroupedTimeSlot(start: 0, end: 0, isAvailable: false, count: 0)
+    })!
   }
 }

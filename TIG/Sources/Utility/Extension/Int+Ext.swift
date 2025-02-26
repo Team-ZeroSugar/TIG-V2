@@ -41,8 +41,13 @@ extension Int {
   private func getDurationFormat(from totalSeconds: Int) -> String {
     let hours = totalSeconds / Time.hour
     let minutes = totalSeconds % Time.hour / Time.minute
-    if minutes == 0 {
-      return "\(hours)시간"  // 0분일 경우 생략
+    
+    if hours == 0 && minutes == 0 {
+      return "0시간 0분"
+    } else if hours == 0 {
+      return "\(minutes)분"
+    } else if minutes == 0 {
+      return "\(hours)시간"
     } else {
       return "\(hours)시간 \(minutes)분"
     }

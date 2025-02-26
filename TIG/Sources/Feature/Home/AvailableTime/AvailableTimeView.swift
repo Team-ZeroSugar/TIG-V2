@@ -12,7 +12,7 @@ struct AvailableTimeView: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      CurrentTimeView(homeViewModel: homeViewModel)
+      HeaderView(homeViewModel: homeViewModel)
         .padding(.top, 40)
       TimerView(homeViewModel: homeViewModel)
         .padding(.top, 34)
@@ -24,7 +24,7 @@ struct AvailableTimeView: View {
   }
 }
 
-private struct CurrentTimeView: View {
+private struct HeaderView: View {
   private var startTime: String
   private var endTime: String
   private var isAvailable: Bool
@@ -57,14 +57,12 @@ private struct CurrentTimeView: View {
 private struct TimerView: View {
   let homeViewModel: HomeViewModel
   
-  private var remainTime: String {
-    let remainSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
-    return remainSeconds.time(format: .duration_kr)
+  private var mainTitle: String {
+    getMainTitle()
   }
   
-  private var totalTime: String {
-    let totalSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeSlot.start
-    return totalSeconds.time(format: .duration_kr)
+  private var subTitle: String {
+    getSubTitle()
   }
   
   private var isAvailable: Bool {
@@ -78,6 +76,11 @@ private struct TimerView: View {
     let start = homeViewModel.state.currentTimeSlot.start
     let end = homeViewModel.state.currentTimeSlot.end
     return CGFloat(now - start) / CGFloat(end - start)
+  }
+  
+  private var isLastTimeSlot: Bool {
+    let currentTimeSlot = homeViewModel.state.currentTimeSlot
+    return currentTimeSlot.end == Time.hour * 24
   }
   
   var body: some View {
@@ -117,11 +120,11 @@ private struct TimerView: View {
         .background(isAvailable ? .blueMain : .gray02)
         .clipShape(Capsule())
       
-      Text(remainTime)
+      Text(mainTitle)
         .font(.pretendard(size: 36, weight: .semiBold))
         .foregroundStyle(isAvailable ? .blueMain : .gray02)
       
-      Text("/ \(totalTime)")
+      Text("\(subTitle)")
         .font(.pretendard(size: 16, weight: .medium))
         .foregroundStyle(isAvailable ? .gray06 : .gray02)
         // 중간 텍스트를 중앙에 배치하기 위해 spacing을 동일하게 주고 offset으로 위치 이동
@@ -131,6 +134,45 @@ private struct TimerView: View {
     // 상단, 하단에 위치한 텍스트의 높이가 각각 26, 19로 다름
     // 상단 텍스트가 7만큼 더 높이가 크기 때문에 그 절반만큼 뷰를 위로 옮김
     .offset(y: -3.5)
+  }
+  
+  private func getMainTitle() -> String {
+    // 현재 비가용시간인 경우
+    if !isAvailable {
+      // 현재 마지막 타임슬롯인 경우
+      if isLastTimeSlot { return "0시간 0분" }
+      // 아닌 경우
+      else {
+        let nowSeconds = homeViewModel.state.currentTimeInSeconds
+        guard let index = homeViewModel.state.groupedTimeSlots.firstIndex(where: {
+          $0.start <= nowSeconds && nowSeconds < $0.end
+        }) else { return "" }
+        let nextTimeSlot = homeViewModel.state.groupedTimeSlots[index + 1]
+        return nextTimeSlot.duration.time(format: .duration_kr)
+      }
+    } else {
+      let remainSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
+      return remainSeconds.time(format: .duration_kr)
+    }
+  }
+  
+  private func getSubTitle() -> String {
+    if !isAvailable {
+      if isLastTimeSlot { return "" }
+      else {
+        let nowSeconds = homeViewModel.state.currentTimeInSeconds
+        guard let index = homeViewModel.state.groupedTimeSlots.firstIndex(where: {
+          $0.start <= nowSeconds && nowSeconds < $0.end
+        }) else { return "" }
+        let nextTimeSlot = homeViewModel.state.groupedTimeSlots[index + 1]
+        let start = nextTimeSlot.start.time(format: .ampm_kr)
+        let end = nextTimeSlot.end.time(format: .ampm_kr)
+        return "\(start) - \(end)"
+      }
+    } else {
+      let currentTimeSlot = homeViewModel.state.currentTimeSlot
+      return "/ \(currentTimeSlot.duration.time(format: .duration_kr))"
+    }
   }
 }
 
