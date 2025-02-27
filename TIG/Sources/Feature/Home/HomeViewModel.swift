@@ -41,6 +41,10 @@ final class HomeViewModel {
   
   private(set) var state: State = .init()
   
+  private let dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository()
+  private let weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository()
+  private let appConfigRepository: AppConfigRepository = StubAppConfigRepository()
+  
   func send(_ action: Action) {
     switch action {
     case .onAppear:
@@ -156,18 +160,85 @@ private extension HomeViewModel {
 
 // MARK: - TimeSlot Function
 private extension HomeViewModel {
-  /// State 내에 정의된 TimeSlot 변수들을 초기화 합니다
+  /// 특정 날짜에 맞는 TimeSlots로 상태를 초기화 합니다.
+  /// - Parameter date: 날짜
   func initializeTimeSlot(date: Date) {
-    // TODO: 현재 선택된 날짜에 맞춰 TimeSlot 가져오는 로직 필요
-    // 1. 현재 선택된 날짜의 DailySchedule 가져오기
-    // 2. 만약 없다면 WeeklySchedule을 통해 생성
-    // 3. WeeklySchedule 또한 없다면 기상, 수면시간에 맞춰 생성
-    // 현재는 Test
-    let now = Date().formattedDate
-    let mock = now == date.formattedDate ? TimeSlot.mock : TimeSlot.mock.map { TimeSlot(start: $0.start, end: $0.end, isAvailable: Bool.random()) }
-    state.timeSlots = mock
-    state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
-    state.currentTimeSlot = getCurrentGroupedTimeSlot()
+    
+    let result = getDailySchedule(date: date)
+    switch result {
+    case .success(let dailySchedule):
+      state.timeSlots = dailySchedule.timeSlots
+      state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
+      state.currentTimeSlot = getCurrentGroupedTimeSlot()
+    case .failure:
+      break
+    }
+  }
+  
+  /// DB에서 해당 날짜에 맞는 DailySchedule을 가져옵니다.
+  /// - Parameter date: 불러올 날짜
+  /// - Returns: DailySchedule
+  func getDailySchedule(date: Date) -> Result<DailySchedule, Error> {
+    let result = dailyScheduleRepository.fetchDailySchedule(date: date)
+    
+    switch result {
+    case .success(let dailySchedule):
+      if let dailySchedule = dailySchedule {
+        return .success(dailySchedule)
+      } else {
+        return getDailyScheduleFromWeeklySchedule(date: date)
+      }
+      
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+  
+  /// WeeklySchedule로부터 DailySchedule을 가져옵니다.
+  /// - Parameter date: 불러올 날짜
+  /// - Returns: DailySchedule
+  func getDailyScheduleFromWeeklySchedule(date: Date) -> Result<DailySchedule, Error> {
+    let result = weeklyScheduleRepository.fetchWeeklySchedule(weekDay: WeekDay(rawValue: date.weekday - 1)!)
+    
+    switch result {
+    case .success(let weekdaySchedule):
+      if let weekdaySchedule = weekdaySchedule {
+        return .success(DailySchedule(
+          date: date,
+          timeSlots: weekdaySchedule.timeSlots
+        ))
+      } else {
+        return getDailyScheduleFromSleepTime()
+      }
+    case .failure(let error):
+      return .failure(error)
+    }
+  }
+  
+  /// 수면 시간에 맞춘 DailySchedule을 불러옵니다.
+  /// - Returns: DailySchedule
+  func getDailyScheduleFromSleepTime() -> Result<DailySchedule, Error> {
+    let wakeupTime = appConfigRepository.fetchWakeupTime()
+    let bedTime = appConfigRepository.fetchBedTime()
+    
+    do {
+      let wakeup = try wakeupTime.get()
+      let bed = try bedTime.get()
+      
+      var timeSlots: [TimeSlot] = []
+      
+      for time in stride(from: 0, to: Time.hour * 24, by: Time.interval) {
+        timeSlots.append(TimeSlot(
+          start: time,
+          end: time + Time.interval,
+          isAvailable: wakeup <= time && time < bed - Time.interval ? true : false
+        ))
+      }
+      
+      return .success(DailySchedule(date: Date().formattedDate, timeSlots: timeSlots))
+    } catch {
+      return .failure(error)
+    }
   }
   
   /// 현재 시간대에 위치한 그룹화된 TimeSlot을 가져옵니다
