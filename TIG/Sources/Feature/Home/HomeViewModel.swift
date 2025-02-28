@@ -12,8 +12,11 @@ import Combine
 final class HomeViewModel {
   struct State {
     var timerCancellable: Cancellable?
+    
+    // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장해보기
     var currentTimeInSeconds: Int = Date().totalSeconds
     
+    // TODO: SelectedDate로 네이밍 수정
     var currentDate: Date = Date().formattedDate
     
     // 탭바 상태
@@ -47,7 +50,6 @@ final class HomeViewModel {
     case .onAppear:
       handleTimer()
       initializeTimeSlot(date: state.currentDate)
-      print(try? dailyScheduleRepository.fetchAllDailySchedules().get())
     case .onDisappear:
       stopTimer()
       
@@ -84,26 +86,20 @@ private extension HomeViewModel {
     state.timerCancellable?.cancel()
   }
   
-  // TODO: 수정 필요
   func processTimerTask(date: Date) {
-    // 현재 선택된 날짜가 현재 날짜와 다른 경우 TimeSlot 업데이트
+    // 현재 시간(초) 업데이트
+    state.currentTimeInSeconds = date.totalSeconds
+    
+    // 다음 날짜로 넘어가는 시점인 경우 TimeSlot 업데이트
     if state.currentDate != date.formattedDate {
       initializeTimeSlot(date: date)
+      
+      // 현재 선택된 날짜 업데이트
+      state.currentDate = date.formattedDate
+    } else {
+      // 현재 위치한 TimeSlot만 업데이트
+      state.currentTimeSlot = getCurrentGroupedTimeSlot()
     }
-    
-    // 현재 선택된 날짜 업데이트
-    state.currentDate = date.formattedDate
-    
-    // 현재 시간(초) 업데이트
-    let currentSeconds = date.totalSeconds
-    state.currentTimeInSeconds = currentSeconds
-    
-    // 현재 위치한 타임 슬롯 업데이트
-    guard let currentTimeSlot = state.groupedTimeSlots.first(where: {
-      $0.start <= currentSeconds && currentSeconds < $0.end
-    }) else { return }
-    
-    state.currentTimeSlot = currentTimeSlot
   }
 }
 
