@@ -14,8 +14,6 @@ final class HomeViewModel {
     var timerCancellable: Cancellable?
     var currentTimeInSeconds: Int = Date().totalSeconds
     
-    // 주간 캘린더 상태
-    var weekSlider: [[Date.WeekDay]] = []
     var currentDate: Date = Date().formattedDate
     
     // 탭바 상태
@@ -33,7 +31,6 @@ final class HomeViewModel {
     
     // 주간 캘린더 액션
     case selectDate(Date)
-    case moveWeekPeriod(index: Int)
     
     // 탭바 액션
     case changeTab(HomeTab)
@@ -48,22 +45,13 @@ final class HomeViewModel {
   func send(_ action: Action) {
     switch action {
     case .onAppear:
-      if state.weekSlider.isEmpty {
-        state.weekSlider = generateWeekSlider()
-      }
       handleTimer()
       initializeTimeSlot(date: state.currentDate)
-      
+      print(try? dailyScheduleRepository.fetchAllDailySchedules().get())
     case .onDisappear:
       stopTimer()
       
-    case .moveWeekPeriod(let index):
-      if state.weekSlider.indices.contains(index) {
-        paginateWeek(currentIndex: index)
-      }
-      
     case .selectDate(let date):
-      state.weekSlider = generateWeekSlider(anchor: date)
       state.currentDate = date.formattedDate
       handleTimer()
       initializeTimeSlot(date: date)
@@ -119,45 +107,6 @@ private extension HomeViewModel {
   }
 }
 
-// MARK: - Weekly Calendar Function
-private extension HomeViewModel {
-  /// 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음을 생성
-  /// - Parameter date: 기준이 되는 날짜
-  /// - Returns: 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음
-  func generateWeekSlider(anchor date: Date = .now) -> [[Date.WeekDay]] {
-    var newWeeks = [[Date.WeekDay]]()
-    let anchorWeek = date.weekOfDate
-    
-    if let firstDate = anchorWeek.first?.date {
-      newWeeks.append(firstDate.createPreviousWeek())
-    }
-    
-    newWeeks.append(anchorWeek)
-    
-    if let lastDate = anchorWeek.last?.date {
-      newWeeks.append(lastDate.createNextWeek())
-    }
-    
-    return newWeeks
-  }
-  
-  /// 현재 주간 캘린더 위치가 weekSlider의 첫번째 또는 마지막인 경우 새로 생성
-  /// - Parameter currentIndex: 현재 위치한 주간 캘린더 인덱스
-  func paginateWeek(currentIndex: Int) {
-    if let firstDate = state.weekSlider[currentIndex].first?.date,
-       currentIndex == 0 {
-      state.weekSlider.insert(firstDate.createPreviousWeek(), at: 0)
-      state.weekSlider.removeLast()
-    }
-    
-    if let lastDate = state.weekSlider[currentIndex].last?.date,
-       currentIndex == (state.weekSlider.count - 1) {
-      state.weekSlider.append(lastDate.createNextWeek())
-      state.weekSlider.removeFirst()
-    }
-  }
-}
-
 // MARK: - TimeSlot Function
 private extension HomeViewModel {
   /// 특정 날짜에 맞는 TimeSlots로 상태를 초기화 합니다.
@@ -203,12 +152,20 @@ private extension HomeViewModel {
     switch result {
     case .success(let weekdaySchedule):
       if let weekdaySchedule = weekdaySchedule {
-        return .success(DailySchedule(
-          date: date,
+        let dailySchedule = DailySchedule(
+          date: date.formattedDate,
           timeSlots: weekdaySchedule.timeSlots
-        ))
+        )
+        
+        // getDailySchedule()을 통해 선택된 날짜에 대한 DailySchedule이 없는 경우 이 메서드를 실행하게 됨
+        // 이때 DailySchedule을 불러오는 날짜가 오늘 날짜인 경우 DailySchedule 저장
+        if date.isToday {
+          dailyScheduleRepository.createDailySchedule(dailySchedule)
+        }
+        
+        return .success(dailySchedule)
       } else {
-        return getDailyScheduleFromSleepTime()
+        return getDailyScheduleFromSleepTime(date: date)
       }
     case .failure(let error):
       return .failure(error)
@@ -217,7 +174,7 @@ private extension HomeViewModel {
   
   /// 수면 시간에 맞춘 DailySchedule을 불러옵니다.
   /// - Returns: DailySchedule
-  func getDailyScheduleFromSleepTime() -> Result<DailySchedule, Error> {
+  func getDailyScheduleFromSleepTime(date: Date) -> Result<DailySchedule, Error> {
     let wakeupTime = appConfigRepository.fetchWakeupTime()
     let bedTime = appConfigRepository.fetchBedTime()
     
@@ -235,7 +192,15 @@ private extension HomeViewModel {
         ))
       }
       
-      return .success(DailySchedule(date: Date().formattedDate, timeSlots: timeSlots))
+      // getDailySchedule()을 통해 선택된 날짜에 대한 DailySchedule이 없는 경우와
+      // 주간 반복 데이터가 없는 경우 이 메서드를 실행하게 됨
+      // 이때 DailySchedule을 불러오는 날짜가 오늘 날짜인 경우 DailySchedule 저장
+      let dailySchedule = DailySchedule(date: date.formattedDate, timeSlots: timeSlots)
+      if date.isToday {
+        dailyScheduleRepository.createDailySchedule(dailySchedule)
+      }
+      
+      return .success(dailySchedule)
     } catch {
       return .failure(error)
     }
@@ -244,6 +209,8 @@ private extension HomeViewModel {
   /// 현재 시간대에 위치한 그룹화된 TimeSlot을 가져옵니다
   /// - Returns: 현재 시간대에 위치한 GroupedTimeSlot
   func getCurrentGroupedTimeSlot() -> GroupedTimeSlot {
+    // TODO: 오늘 날짜가 아닌 경우에 대한 생각 필요
+    // currentGroupedTimeSlot 대신 index로 대체 후 오늘 날짜가 아닌 경우 -1로 저장 등등
     let now = Date()
     let totalSeconds = now.totalSeconds
     

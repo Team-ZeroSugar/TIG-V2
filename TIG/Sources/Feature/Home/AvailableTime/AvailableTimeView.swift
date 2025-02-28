@@ -226,17 +226,19 @@ private struct FooterView: View {
       
       Spacer()
       
-      Button {
-        
-      } label: {
-        Text("시간 수정")
-          .foregroundStyle(.blueMain)
-          .font(.pretendard(size: 14, weight: .medium))
+      if Date().formattedDate <= homeViewModel.state.currentDate {
+        Button {
+          
+        } label: {
+          Text("시간 수정")
+            .foregroundStyle(.blueMain)
+            .font(.pretendard(size: 14, weight: .medium))
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 18)
+        .background(.blueButton)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
       }
-      .padding(.vertical, 10)
-      .padding(.horizontal, 18)
-      .background(.blueButton)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .padding(.horizontal, 20)
     .padding(.vertical, 22)
