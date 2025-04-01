@@ -41,6 +41,7 @@ final class HomeViewModel {
   
   private(set) var state: State = .init()
   
+  // TODO: 외부 주입 필요
   private let dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository()
   private let weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository()
   private let appConfigRepository: AppConfigRepository = StubAppConfigRepository()
@@ -48,6 +49,7 @@ final class HomeViewModel {
   func send(_ action: Action) {
     switch action {
     case .onAppear:
+      // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
       handleTimer()
       initializeTimeSlot(date: state.currentDate)
     case .onDisappear:
