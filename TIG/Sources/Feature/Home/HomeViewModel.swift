@@ -13,11 +13,10 @@ final class HomeViewModel {
   struct State {
     var timerCancellable: Cancellable?
     
-    // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장해보기
+    // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장하는 게 더 나을지 생각 필요
     var currentTimeInSeconds: Int = Date().totalSeconds
     
-    // TODO: SelectedDate로 네이밍 수정
-    var currentDate: Date = Date().formattedDate
+    var selectedDate: Date = Date().formattedDate
     
     // 탭바 상태
     var selectedTab: HomeTab = .available
@@ -25,7 +24,7 @@ final class HomeViewModel {
     // 타임 슬롯 상태
     var timeSlots: [TimeSlot] = []
     var groupedTimeSlots: [GroupedTimeSlot] = []
-    var currentTimeSlot: GroupedTimeSlot = .init(start: 0, end: 0, isAvailable: false, duration: 0, count: 0)
+    var currentTimeSlot: GroupedTimeSlot = .mock
   }
   
   enum Action {
@@ -41,22 +40,31 @@ final class HomeViewModel {
   
   private(set) var state: State = .init()
   
-  // TODO: 외부 주입 필요
-  private let dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository()
-  private let weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository()
-  private let appConfigRepository: AppConfigRepository = StubAppConfigRepository()
+  private let dailyScheduleRepository: DailyScheduleRepository
+  private let weeklyScheduleRepository: WeeklyScheduleRepository
+  private let appConfigRepository: AppConfigRepository
+  
+  init(
+    dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository(),
+    weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository(),
+    appconfigRepository: AppConfigRepository = StubAppConfigRepository()
+  ) {
+    self.dailyScheduleRepository = dailyScheduleRepository
+    self.weeklyScheduleRepository = weeklyScheduleRepository
+    self.appConfigRepository = appconfigRepository
+  }
   
   func send(_ action: Action) {
     switch action {
     case .onAppear:
       // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
       handleTimer()
-      initializeTimeSlot(date: state.currentDate)
+      initializeTimeSlot(date: state.selectedDate)
     case .onDisappear:
       stopTimer()
       
     case .selectDate(let date):
-      state.currentDate = date.formattedDate
+      state.selectedDate = date.formattedDate
       handleTimer()
       initializeTimeSlot(date: date)
       
@@ -71,7 +79,7 @@ private extension HomeViewModel {
   /// 타이머를 조작합니다.
   /// 현재 선택된 날짜가 오늘 날짜인 경우에만 타이머를 실행하고 그 외 날짜는 타이머 동작을 멈춥니다.
   func handleTimer() {
-    if state.currentDate.isToday { startTimer() }
+    if state.selectedDate.isToday { startTimer() }
     else { stopTimer() }
   }
   
@@ -93,11 +101,11 @@ private extension HomeViewModel {
     state.currentTimeInSeconds = date.totalSeconds
     
     // 다음 날짜로 넘어가는 시점인 경우 TimeSlot 업데이트
-    if state.currentDate != date.formattedDate {
+    if state.selectedDate != date.formattedDate {
       initializeTimeSlot(date: date)
       
       // 현재 선택된 날짜 업데이트
-      state.currentDate = date.formattedDate
+      state.selectedDate = date.formattedDate
     } else {
       // 현재 위치한 TimeSlot만 업데이트
       state.currentTimeSlot = getCurrentGroupedTimeSlot()

@@ -45,7 +45,7 @@ struct WeeklyCalendar: View {
         weekSlider = generateWeekSlider()
       }
     }
-    .onChange(of: homeViewModel.state.currentDate) {
+    .onChange(of: homeViewModel.state.selectedDate) {
       weekSlider = generateWeekSlider(anchor: $1)
     }
   }
@@ -113,7 +113,7 @@ private struct WeekView: View {
   @ViewBuilder
   private func dayView(_ date: Date) -> some View {
     let isSelected = date.isSameDate(
-      as: homeViewModel.state.currentDate
+      as: homeViewModel.state.selectedDate
     )
     
     VStack(spacing: 8) {
@@ -123,7 +123,7 @@ private struct WeekView: View {
         .font(.pretendard(size: 16, weight: .semiBold))
     }
     .foregroundStyle(
-      homeViewModel.state.currentDate == date
+      homeViewModel.state.selectedDate == date
       ? .gray01 : .gray05
     )
     .frame(maxWidth: .infinity, alignment: .center)

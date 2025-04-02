@@ -10,7 +10,7 @@ import SwiftUI
 struct AvailableTimeView: View {
   let homeViewModel: HomeViewModel
   private var isToday: Bool {
-    homeViewModel.state.currentDate.isToday
+    homeViewModel.state.selectedDate.isToday
   }
   
   var body: some View {
@@ -59,7 +59,7 @@ private struct HeaderView: View {
   }
 }
 
-// TODO: 수정 필요
+// TODO: 코드 리팩토링 필요
 private struct TimerView: View {
   let homeViewModel: HomeViewModel
   
@@ -156,6 +156,8 @@ private struct TimerView: View {
         let nextTimeSlot = homeViewModel.state.groupedTimeSlots[index + 1]
         return nextTimeSlot.duration.time(format: .duration_kr)
       }
+    
+    // 현재 가용시간인 경우
     } else {
       let remainSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
       return remainSeconds.time(format: .duration_kr)
@@ -163,8 +165,11 @@ private struct TimerView: View {
   }
   
   private func getSubTitle() -> String {
+    // 현재 비가용시간인 경우
     if !isAvailable {
+      // 현재 마지막 타임슬롯인 경우
       if isLastTimeSlot { return "" }
+      // 아닌 경우
       else {
         let nowSeconds = homeViewModel.state.currentTimeInSeconds
         guard let index = homeViewModel.state.groupedTimeSlots.firstIndex(where: {
@@ -175,6 +180,8 @@ private struct TimerView: View {
         let end = nextTimeSlot.end.time(format: .ampm_kr)
         return "\(start) - \(end)"
       }
+      
+    // 현재 가용시간인 경우
     } else {
       let currentTimeSlot = homeViewModel.state.currentTimeSlot
       return "/ \(currentTimeSlot.duration.time(format: .duration_kr))"
@@ -204,7 +211,7 @@ private struct FooterView: View {
   }
   
   private var isToday: Bool {
-    homeViewModel.state.currentDate.isToday
+    homeViewModel.state.selectedDate.isToday
   }
   
   var body: some View {
@@ -226,7 +233,7 @@ private struct FooterView: View {
       
       Spacer()
       
-      if Date().formattedDate <= homeViewModel.state.currentDate {
+      if Date().formattedDate <= homeViewModel.state.selectedDate {
         Button {
           
         } label: {
