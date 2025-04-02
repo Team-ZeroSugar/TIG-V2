@@ -24,7 +24,9 @@ final class HomeViewModel {
     // 타임 슬롯 상태
     var timeSlots: [TimeSlot] = []
     var groupedTimeSlots: [GroupedTimeSlot] = []
-    var currentTimeSlot: GroupedTimeSlot = .mock
+    var currentTimeSlot: GroupedTimeSlot {
+      self.groupedTimeSlots.currentTimeSlot
+    }
   }
   
   enum Action {
@@ -58,15 +60,15 @@ final class HomeViewModel {
     switch action {
     case .onAppear:
       // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
-      handleTimer()
       initializeTimeSlot(date: state.selectedDate)
+      handleTimer()
     case .onDisappear:
       stopTimer()
       
     case .selectDate(let date):
       state.selectedDate = date.formattedDate
-      handleTimer()
       initializeTimeSlot(date: date)
+      handleTimer()
       
     case .changeTab(let tab):
       state.selectedTab = tab
@@ -87,29 +89,23 @@ private extension HomeViewModel {
     state.timerCancellable = Timer
       .publish(every: 1, on: .main, in: .common)
       .autoconnect()
-      .sink(receiveValue: { [weak self] date in
-        self?.processTimerTask(date: date)
+      .sink(receiveValue: { [weak self] now in
+        // 현재 시간(초) 업데이트
+        self?.state.currentTimeInSeconds = now.totalSeconds
+        
+        // 현재 선택된 날짜가 타이머 날짜(현재 날짜)와 일치하지 않는 경우 -> 다음날로 넘어가는 시점
+        if self?.state.selectedDate != now.formattedDate {
+          // 타임슬롯 초기화(업데이트)
+          self?.initializeTimeSlot(date: now)
+          
+          // 현재 선택된 날짜 업데이트
+          self?.state.selectedDate = now.formattedDate
+        }
       })
   }
   
   func stopTimer() {
     state.timerCancellable?.cancel()
-  }
-  
-  func processTimerTask(date: Date) {
-    // 현재 시간(초) 업데이트
-    state.currentTimeInSeconds = date.totalSeconds
-    
-    // 다음 날짜로 넘어가는 시점인 경우 TimeSlot 업데이트
-    if state.selectedDate != date.formattedDate {
-      initializeTimeSlot(date: date)
-      
-      // 현재 선택된 날짜 업데이트
-      state.selectedDate = date.formattedDate
-    } else {
-      // 현재 위치한 TimeSlot만 업데이트
-      state.currentTimeSlot = getCurrentGroupedTimeSlot()
-    }
   }
 }
 
@@ -124,7 +120,6 @@ private extension HomeViewModel {
     case .success(let dailySchedule):
       state.timeSlots = dailySchedule.timeSlots
       state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
-      state.currentTimeSlot = getCurrentGroupedTimeSlot()
     case .failure:
       break
     }
@@ -194,7 +189,7 @@ private extension HomeViewModel {
         timeSlots.append(TimeSlot(
           start: time,
           end: time + Time.interval,
-          isAvailable: wakeup <= time && time < bed - Time.interval ? true : false
+          isAvailable: wakeup <= time && time < bed ? true : false
         ))
       }
       
@@ -210,18 +205,5 @@ private extension HomeViewModel {
     } catch {
       return .failure(error)
     }
-  }
-  
-  /// 현재 시간대에 위치한 그룹화된 TimeSlot을 가져옵니다
-  /// - Returns: 현재 시간대에 위치한 GroupedTimeSlot
-  func getCurrentGroupedTimeSlot() -> GroupedTimeSlot {
-    // TODO: 오늘 날짜가 아닌 경우에 대한 생각 필요
-    // currentGroupedTimeSlot 대신 index로 대체 후 오늘 날짜가 아닌 경우 -1로 저장 등등
-    let now = Date()
-    let totalSeconds = now.totalSeconds
-    
-    return state.groupedTimeSlots.first(where: {
-      $0.start <= totalSeconds && $0.end > totalSeconds
-    })!
   }
 }
