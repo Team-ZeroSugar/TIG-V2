@@ -115,7 +115,7 @@ private extension HomeViewModel {
   /// - Parameter date: 날짜
   func initializeTimeSlot(date: Date) {
     
-    let result = getDailySchedule(date: date)
+    let result = fetchDailySchedule(date: date)
     switch result {
     case .success(let dailySchedule):
       state.timeSlots = dailySchedule.timeSlots
@@ -126,82 +126,64 @@ private extension HomeViewModel {
   }
   
   /// DB에서 해당 날짜에 맞는 DailySchedule을 가져옵니다.
+  /// 없는 경우, WeeklySchedule 또는 수면 시간 기준으로 생성합니다.
   /// - Parameter date: 불러올 날짜
   /// - Returns: DailySchedule
-  func getDailySchedule(date: Date) -> Result<DailySchedule, Error> {
-    let result = dailyScheduleRepository.fetchDailySchedule(date: date)
-    
-    switch result {
+  func fetchDailySchedule(date: Date) -> Result<DailySchedule, Error> {
+    // 1. DailySchedule이 있으면 바로 반환
+    switch dailyScheduleRepository.fetchDailySchedule(date: date) {
     case .success(let dailySchedule):
-      if let dailySchedule = dailySchedule {
+      if let dailySchedule {
         return .success(dailySchedule)
-      } else {
-        return getDailyScheduleFromWeeklySchedule(date: date)
       }
       
     case .failure(let error):
       return .failure(error)
     }
-  }
-  
-  /// WeeklySchedule로부터 DailySchedule을 가져옵니다.
-  /// - Parameter date: 불러올 날짜
-  /// - Returns: DailySchedule
-  func getDailyScheduleFromWeeklySchedule(date: Date) -> Result<DailySchedule, Error> {
-    let result = weeklyScheduleRepository.fetchWeeklySchedule(weekDay: WeekDay(rawValue: date.weekday - 1)!)
     
-    switch result {
-    case .success(let weekdaySchedule):
-      if let weekdaySchedule = weekdaySchedule {
+    // 2. 설정된 WeeklySchedule로 DailySchedule 불러오기
+    let weekDay = WeekDay(rawValue: date.weekday - 1)!
+    switch weeklyScheduleRepository.fetchWeeklySchedule(weekDay: weekDay) {
+    case .success(let weeklySchedule):
+      if let weeklySchedule {
         let dailySchedule = DailySchedule(
           date: date.formattedDate,
-          timeSlots: weekdaySchedule.timeSlots
+          timeSlots: weeklySchedule.timeSlots
         )
         
-        // getDailySchedule()을 통해 선택된 날짜에 대한 DailySchedule이 없는 경우 이 메서드를 실행하게 됨
-        // 이때 DailySchedule을 불러오는 날짜가 오늘 날짜인 경우 DailySchedule 저장
+        // 오늘 날짜의 dailySchedule인 경우 저장
         if date.isToday {
           dailyScheduleRepository.createDailySchedule(dailySchedule)
         }
         
         return .success(dailySchedule)
-      } else {
-        return getDailyScheduleFromSleepTime(date: date)
       }
+      
     case .failure(let error):
       return .failure(error)
     }
-  }
-  
-  /// 수면 시간에 맞춘 DailySchedule을 불러옵니다.
-  /// - Returns: DailySchedule
-  func getDailyScheduleFromSleepTime(date: Date) -> Result<DailySchedule, Error> {
-    let wakeupTime = appConfigRepository.fetchWakeupTime()
-    let bedTime = appConfigRepository.fetchBedTime()
     
+    // 3. 설정된 수면 시간 기준으로 DailySchedule 불러오기
     do {
-      let wakeup = try wakeupTime.get()
-      let bed = try bedTime.get()
+      let wakeup = try appConfigRepository.fetchWakeupTime().get()
+      let bed = try appConfigRepository.fetchBedTime().get()
       
-      var timeSlots: [TimeSlot] = []
-      
-      for time in stride(from: 0, to: Time.hour * 24, by: Time.interval) {
-        timeSlots.append(TimeSlot(
-          start: time,
-          end: time + Time.interval,
-          isAvailable: wakeup <= time && time < bed ? true : false
-        ))
+      let timeSlots = stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
+        TimeSlot(
+          start: $0,
+          end: $0 + Time.interval,
+          isAvailable: wakeup <= $0 && $0 < bed
+        )
       }
       
-      // getDailySchedule()을 통해 선택된 날짜에 대한 DailySchedule이 없는 경우와
-      // 주간 반복 데이터가 없는 경우 이 메서드를 실행하게 됨
-      // 이때 DailySchedule을 불러오는 날짜가 오늘 날짜인 경우 DailySchedule 저장
+      // 오늘 날짜의 dailySchedule인 경우 저장
       let dailySchedule = DailySchedule(date: date.formattedDate, timeSlots: timeSlots)
       if date.isToday {
         dailyScheduleRepository.createDailySchedule(dailySchedule)
       }
       
       return .success(dailySchedule)
+      
     } catch {
       return .failure(error)
     }
