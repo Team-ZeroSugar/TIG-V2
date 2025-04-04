@@ -9,8 +9,8 @@ import Foundation
 
 final class StubAppConfigRepository: AppConfigRepository {
   private var onboardingCompleted: Bool = false
-  private var wakeupTime: Int = 0
-  private var bedTime: Int = 0
+  private var wakeupTime: Int = Time.hour * 6
+  private var bedTime: Int = Time.hour * 22
   
   func setOnboardingCompleted(wakeupTime: Int, bedTime: Int) {
     self.onboardingCompleted = true

@@ -26,6 +26,10 @@ extension Date {
     return Self.configuredCalendar.component(.day, from: self)
   }
   
+  var weekday: Int {
+    return Self.configuredCalendar.component(.weekday, from: self)
+  }
+  
   /// 오늘 날짜인지 확인
   var isToday: Bool {
     Self.configuredCalendar.isDateInToday(self)
