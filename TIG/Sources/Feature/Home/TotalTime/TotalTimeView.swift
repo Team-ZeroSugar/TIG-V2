@@ -21,7 +21,6 @@ struct TotalTimeView: View {
           groupedTimeSlots: homeViewModel.state.groupedTimeSlots
         )
         
-        
       }.padding(.horizontal, 20)
     }
     .scrollIndicators(.hidden)
@@ -34,20 +33,20 @@ struct TotalTimeView: View {
 private struct TimeIndicatorView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 25) {
-      ForEach(0..<49) { idx in
-        let meridiemText = (idx / 2) < 12 ? "오전" : "오후"
-        let hour = (idx / 2) % 12 == 0 ? 12 : (idx / 2) % 12
+      ForEach(0..<49) { index in
+        let meridiem = (index / 2) < 12 ? "오전" : "오후"
+        let hour = (index / 2) % 12 == 0 ? 12 : (index / 2) % 12
         HStack(alignment: .top) {
           
-          Text("\(meridiemText) \(hour)시")
+          Text("\(meridiem) \(hour)시")
             .font(.pretendard(size: 12, weight: .medium))
             .foregroundStyle(.gray03)
             .frame(width: 47, height: 14, alignment: .leading)
-            .opacity(idx % 2 == 0 ? 1 : 0)
+            .opacity(index % 2 == 0 ? 1 : 0)
             .offset(y: -7)
           
           Rectangle()
-            .frame(width: idx % 2 == 0 ? 24 : 16, height: 1)
+            .frame(width: index % 2 == 0 ? 24 : 16, height: 1)
             .foregroundStyle(.gray02)
         }
       }
@@ -63,23 +62,24 @@ private struct GroupedTimeSlotsView: View {
     VStack(alignment: .leading, spacing: 0) {
       ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
         
-        let height = Double(groupedTimeSlot.count) * 39.0 - 8
+        let height = 35.0
+        let space = 2.0
+        let groupedHeight = Double(groupedTimeSlot.count) * height + Double(groupedTimeSlot.count - 2) * space
         
         if groupedTimeSlot.isAvailable {
             RoundedRectangle(cornerRadius: 8)
               .foregroundStyle(.blueTimeSlot)
-              .frame(width: .infinity, height: height)
-              .padding(.vertical, 4)
+              .frame(width: .infinity, height: groupedHeight)
+              .padding(.vertical, space)
         } else {
           HStack(alignment: .top) {
             RoundedRectangle(cornerRadius: 8)
               .foregroundStyle(.blueTimeSlot)
-              .frame(width: 4, height: height)
-              .padding(.vertical, 4)
+              .frame(width: 4, height: groupedHeight)
             Text("비가용 시간(30분)")
               .padding(.leading, 15)
               .padding(.top, 6)
-          }
+          }.padding(.vertical, space)
         }
       }
     }.frame(maxWidth: .infinity)
