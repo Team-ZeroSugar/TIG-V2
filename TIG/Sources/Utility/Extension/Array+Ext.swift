@@ -27,6 +27,7 @@ extension Array where Element == TimeSlot {
           start: currentStart,
           end: currentEnd,
           isAvailable: currentIsAvailable,
+          duration: currentEnd - currentStart,
           count: currentCount
         ))
         currentIsAvailable = self[index].isAvailable
@@ -40,6 +41,7 @@ extension Array where Element == TimeSlot {
       start: currentStart,
       end: currentEnd,
       isAvailable: currentIsAvailable,
+      duration: currentEnd - currentStart,
       count: currentCount
     ))
     

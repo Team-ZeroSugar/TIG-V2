@@ -12,11 +12,11 @@ import Combine
 final class HomeViewModel {
   struct State {
     var timerCancellable: Cancellable?
+    
+    // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장하는 게 더 나을지 생각 필요
     var currentTimeInSeconds: Int = Date().totalSeconds
     
-    // 주간 캘린더 상태
-    var weekSlider: [[Date.WeekDay]] = []
-    var currentDate: Date = Date().formattedDate
+    var selectedDate: Date = Date().formattedDate
     
     // 탭바 상태
     var selectedTab: HomeTab = .available
@@ -24,7 +24,9 @@ final class HomeViewModel {
     // 타임 슬롯 상태
     var timeSlots: [TimeSlot] = []
     var groupedTimeSlots: [GroupedTimeSlot] = []
-    var currentTimeSlot: GroupedTimeSlot = .init(start: 0, end: 0, isAvailable: false, count: 0)
+    var currentTimeSlot: GroupedTimeSlot {
+      self.groupedTimeSlots.currentTimeSlot
+    }
   }
   
   enum Action {
@@ -33,7 +35,6 @@ final class HomeViewModel {
     
     // 주간 캘린더 액션
     case selectDate(Date)
-    case moveWeekPeriod(index: Int)
     
     // 탭바 액션
     case changeTab(HomeTab)
@@ -41,26 +42,32 @@ final class HomeViewModel {
   
   private(set) var state: State = .init()
   
+  private let dailyScheduleRepository: DailyScheduleRepository
+  private let weeklyScheduleRepository: WeeklyScheduleRepository
+  private let appConfigRepository: AppConfigRepository
+  
+  init(
+    dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository(),
+    weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository(),
+    appconfigRepository: AppConfigRepository = StubAppConfigRepository()
+  ) {
+    self.dailyScheduleRepository = dailyScheduleRepository
+    self.weeklyScheduleRepository = weeklyScheduleRepository
+    self.appConfigRepository = appconfigRepository
+  }
+  
   func send(_ action: Action) {
     switch action {
     case .onAppear:
-      if state.weekSlider.isEmpty {
-        state.weekSlider = generateWeekSlider()
-      }
+      // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
+      initializeTimeSlot(date: state.selectedDate)
       handleTimer()
-      initializeTimeSlot(date: state.currentDate)
-      
     case .onDisappear:
       stopTimer()
       
-    case .moveWeekPeriod(let index):
-      if state.weekSlider.indices.contains(index) {
-        paginateWeek(currentIndex: index)
-      }
-      
     case .selectDate(let date):
-      state.weekSlider = generateWeekSlider(anchor: date)
-      state.currentDate = date.formattedDate
+      state.selectedDate = date.formattedDate
+      initializeTimeSlot(date: date)
       handleTimer()
       
     case .changeTab(let tab):
@@ -74,7 +81,7 @@ private extension HomeViewModel {
   /// 타이머를 조작합니다.
   /// 현재 선택된 날짜가 오늘 날짜인 경우에만 타이머를 실행하고 그 외 날짜는 타이머 동작을 멈춥니다.
   func handleTimer() {
-    if state.currentDate.isToday { startTimer() }
+    if state.selectedDate.isToday { startTimer() }
     else { stopTimer() }
   }
   
@@ -82,10 +89,18 @@ private extension HomeViewModel {
     state.timerCancellable = Timer
       .publish(every: 1, on: .main, in: .common)
       .autoconnect()
-      .sink(receiveValue: { [weak self] date in
-        self?.state.currentTimeInSeconds = date.totalSeconds
+      .sink(receiveValue: { [weak self] now in
+        // 현재 시간(초) 업데이트
+        self?.state.currentTimeInSeconds = now.totalSeconds
         
-        // TODO: 현재 위치한 타임 슬롯 가져오는 로직 구현
+        // 현재 선택된 날짜가 타이머 날짜(현재 날짜)와 일치하지 않는 경우 -> 다음날로 넘어가는 시점
+        if self?.state.selectedDate != now.formattedDate {
+          // 타임슬롯 초기화(업데이트)
+          self?.initializeTimeSlot(date: now)
+          
+          // 현재 선택된 날짜 업데이트
+          self?.state.selectedDate = now.formattedDate
+        }
       })
   }
   
@@ -94,67 +109,83 @@ private extension HomeViewModel {
   }
 }
 
-// MARK: - Weekly Calendar Function
-private extension HomeViewModel {
-  /// 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음을 생성
-  /// - Parameter date: 기준이 되는 날짜
-  /// - Returns: 기준 날짜가 속한 주를 포함한 이전, 다음 주 데이터 묶음
-  func generateWeekSlider(anchor date: Date = .now) -> [[Date.WeekDay]] {
-    var newWeeks = [[Date.WeekDay]]()
-    let anchorWeek = date.weekOfDate
-    
-    if let firstDate = anchorWeek.first?.date {
-      newWeeks.append(firstDate.createPreviousWeek())
-    }
-    
-    newWeeks.append(anchorWeek)
-    
-    if let lastDate = anchorWeek.last?.date {
-      newWeeks.append(lastDate.createNextWeek())
-    }
-    
-    return newWeeks
-  }
-  
-  /// 현재 주간 캘린더 위치가 weekSlider의 첫번째 또는 마지막인 경우 새로 생성
-  /// - Parameter currentIndex: 현재 위치한 주간 캘린더 인덱스
-  func paginateWeek(currentIndex: Int) {
-    if let firstDate = state.weekSlider[currentIndex].first?.date,
-       currentIndex == 0 {
-      state.weekSlider.insert(firstDate.createPreviousWeek(), at: 0)
-      state.weekSlider.removeLast()
-    }
-    
-    if let lastDate = state.weekSlider[currentIndex].last?.date,
-       currentIndex == (state.weekSlider.count - 1) {
-      state.weekSlider.append(lastDate.createNextWeek())
-      state.weekSlider.removeFirst()
-    }
-  }
-}
-
 // MARK: - TimeSlot Function
 private extension HomeViewModel {
-  /// State 내에 정의된 TimeSlot 변수들을 초기화 합니다
+  /// 특정 날짜에 맞는 TimeSlots로 상태를 초기화 합니다.
+  /// - Parameter date: 날짜
   func initializeTimeSlot(date: Date) {
-    // TODO: 현재 선택된 날짜에 맞춰 TimeSlot 가져오는 로직 필요
-    state.timeSlots = TimeSlot.mock
-    state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
-    state.currentTimeSlot = getCurrentGroupedTimeSlot()
+    
+    let result = fetchDailySchedule(date: date)
+    switch result {
+    case .success(let dailySchedule):
+      state.timeSlots = dailySchedule.timeSlots
+      state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
+    case .failure:
+      break
+    }
   }
   
-  /// 현재 시간대에 위치한 그룹화된 TimeSlot을 가져옵니다
-  /// - Returns: 현재 시간대에 위치한 GroupedTimeSlot
-  func getCurrentGroupedTimeSlot() -> GroupedTimeSlot {
-    let now = Date()
-    let totalSeconds = now.totalSeconds
+  /// DB에서 해당 날짜에 맞는 DailySchedule을 가져옵니다.
+  /// 없는 경우, WeeklySchedule 또는 수면 시간 기준으로 생성합니다.
+  /// - Parameter date: 불러올 날짜
+  /// - Returns: DailySchedule
+  func fetchDailySchedule(date: Date) -> Result<DailySchedule, Error> {
+    // 1. DailySchedule이 있으면 바로 반환
+    switch dailyScheduleRepository.fetchDailySchedule(date: date) {
+    case .success(let dailySchedule):
+      if let dailySchedule {
+        return .success(dailySchedule)
+      }
+      
+    case .failure(let error):
+      return .failure(error)
+    }
     
-    // TODO: 앱 플로우가 어떻게 이루어지는지 확인 후 수정 필요
-    // 오늘 날짜에 대한 타임 슬롯인 경우 현재 위치한 타임 슬롯 가져오기
-    // ?? 미래 날짜의 타임 슬롯인 경우 첫번째 타임 슬롯 가져오기
-    // ?? 임의의 값
-    return state.groupedTimeSlots.first(where: {
-      $0.start <= totalSeconds && $0.end > totalSeconds
-    }) ?? state.groupedTimeSlots.first ?? GroupedTimeSlot(start: 0, end: 0, isAvailable: false, count: 0)
+    // 2. 설정된 WeeklySchedule로 DailySchedule 불러오기
+    let weekDay = WeekDay(rawValue: date.weekday - 1)!
+    switch weeklyScheduleRepository.fetchWeeklySchedule(weekDay: weekDay) {
+    case .success(let weeklySchedule):
+      if let weeklySchedule {
+        let dailySchedule = DailySchedule(
+          date: date.formattedDate,
+          timeSlots: weeklySchedule.timeSlots
+        )
+        
+        // 오늘 날짜의 dailySchedule인 경우 저장
+        if date.isToday {
+          dailyScheduleRepository.createDailySchedule(dailySchedule)
+        }
+        
+        return .success(dailySchedule)
+      }
+      
+    case .failure(let error):
+      return .failure(error)
+    }
+    
+    // 3. 설정된 수면 시간 기준으로 DailySchedule 불러오기
+    do {
+      let wakeup = try appConfigRepository.fetchWakeupTime().get()
+      let bed = try appConfigRepository.fetchBedTime().get()
+      
+      let timeSlots = stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
+        TimeSlot(
+          start: $0,
+          end: $0 + Time.interval,
+          isAvailable: wakeup <= $0 && $0 < bed
+        )
+      }
+      
+      // 오늘 날짜의 dailySchedule인 경우 저장
+      let dailySchedule = DailySchedule(date: date.formattedDate, timeSlots: timeSlots)
+      if date.isToday {
+        dailyScheduleRepository.createDailySchedule(dailySchedule)
+      }
+      
+      return .success(dailySchedule)
+      
+    } catch {
+      return .failure(error)
+    }
   }
 }
