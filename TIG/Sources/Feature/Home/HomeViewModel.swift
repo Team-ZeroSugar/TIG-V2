@@ -177,8 +177,7 @@ private extension HomeViewModel {
       }
       
       // 오늘 날짜의 dailySchedule인 경우 저장
-      let mockDaily = TimeSlot.mock
-      let dailySchedule = DailySchedule(date: date.formattedDate, timeSlots: mockDaily)
+      let dailySchedule = DailySchedule(date: date.formattedDate, timeSlots: timeSlots)
       if date.isToday {
         dailyScheduleRepository.createDailySchedule(dailySchedule)
       }
