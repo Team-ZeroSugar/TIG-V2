@@ -121,7 +121,7 @@ private struct UnavailableSlot: View {
       Text("비가용 시간(\(duration.time(format: .duration_kr)))")
         .foregroundStyle(.contentAlternative)
         .font(.pretendard(size: 12, weight: .medium))
-        .padding(.top, slotCount == 1 ? 11 : 18)
+        .padding(.top, 11)
     }
   }
 }

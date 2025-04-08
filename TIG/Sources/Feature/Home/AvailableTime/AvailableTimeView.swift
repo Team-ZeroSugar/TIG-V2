@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AvailableTimeView: View {
+  @State var isPresented = false
   let homeViewModel: HomeViewModel
   private var isToday: Bool {
     homeViewModel.state.selectedDate.isToday
@@ -21,11 +22,14 @@ struct AvailableTimeView: View {
         TimerView(homeViewModel: homeViewModel)
           .padding(.top, 34)
       }
-      FooterView(homeViewModel: homeViewModel)
+      FooterView(isPresented: $isPresented, homeViewModel: homeViewModel)
         .padding(.top, 36)
     }
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.bottom, 10)
+    .fullScreenCover(isPresented: $isPresented) {
+      EditTimeView(isPresented: $isPresented)
+    }
   }
 }
 
@@ -190,7 +194,10 @@ private struct TimerView: View {
 }
 
 private struct FooterView: View {
+  
+  @Binding var isPresented: Bool
   let homeViewModel: HomeViewModel
+  
   
   private var remainTime: String {
     let now = homeViewModel.state.currentTimeInSeconds
@@ -235,7 +242,7 @@ private struct FooterView: View {
       
       if Date().formattedDate <= homeViewModel.state.selectedDate {
         Button {
-          
+          isPresented = true
         } label: {
           Text("시간 수정")
             .foregroundStyle(.blueMain)
