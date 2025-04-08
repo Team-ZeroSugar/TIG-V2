@@ -13,15 +13,16 @@ struct TotalTimeView: View {
   
   var body: some View {
     ScrollView {
-      HStack(alignment: .top, spacing: 25) {
+      HStack(alignment: .top, spacing: 18) {
         
         TimeIndicatorView()
         
-        GroupedTimeSlotsView(
-          groupedTimeSlots: homeViewModel.state.groupedTimeSlots
-        )
+        GroupedTimeSlotsView(groupedTimeSlots: homeViewModel.state.groupedTimeSlots)
         
-      }.padding(.horizontal, 20)
+      }
+      .padding(.horizontal, 20)
+      .padding(.vertical, 29)
+      
     }
     .scrollIndicators(.hidden)
     .onAppear {
@@ -58,33 +59,76 @@ private struct GroupedTimeSlotsView: View {
   
   let groupedTimeSlots: [GroupedTimeSlot]
   
+  private let slotHeight = 35.0
+  private let slotSpace = 2.0
+  
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       ForEach(groupedTimeSlots, id: \.self) { groupedTimeSlot in
         
-        let height = 35.0
-        let space = 2.0
-        let groupedHeight = Double(groupedTimeSlot.count) * height + Double(groupedTimeSlot.count - 2) * space
+        let (start, end, slotCount) = (groupedTimeSlot.start, groupedTimeSlot.end, groupedTimeSlot.count)
+        let duration = slotCount * Time.interval
+        let groupedHeight = Double(slotCount) * slotHeight + Double(slotCount - 1) * (slotSpace * 2)
         
         if groupedTimeSlot.isAvailable {
+          ZStack {
             RoundedRectangle(cornerRadius: 8)
               .foregroundStyle(.blueTimeSlot)
-              .frame(width: .infinity, height: groupedHeight)
-              .padding(.vertical, space)
+              .frame(height: groupedHeight)
+            
+            if slotCount == 1 {
+              Text(duration.time(format: .duration_kr))
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundStyle(.contentNormal)
+                .font(.pretendard(size: 20, weight: .semiBold))
+                .padding(.trailing, 20)
+            } else {
+              VStack(alignment: .leading, spacing: 8) {
+                Text("\(start.time(format: .ampm_kr)) - \(end.time(format: .ampm_kr))")
+                  .foregroundStyle(.contentNormal)
+                  .font(.pretendard(size: 12, weight: .medium))
+                
+                HStack(alignment: .top) {
+                  Text("가용시간")
+                    .foregroundStyle(.contentException)
+                    .font(.pretendard(size: 12, weight: .medium))
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 10)
+                    .background(.primaryNormal)
+                    .clipShape(Capsule())
+                  
+                  Spacer()
+                  
+                  Text(duration.time(format: .duration_kr))
+                    .foregroundStyle(.contentNormal)
+                    .font(.pretendard(size: 20, weight: .semiBold))
+                    .frame(height: groupedHeight - 47, alignment: .bottom)
+                }
+              }
+              .padding(.horizontal, 20)
+              .padding(.vertical, 13)
+            }
+          }.padding(.vertical, slotSpace)
+            
         } else {
-          HStack(alignment: .top) {
-            RoundedRectangle(cornerRadius: 8)
+          HStack(alignment: .top, spacing: 15) {
+            RoundedRectangle(cornerRadius: 4)
               .foregroundStyle(.blueTimeSlot)
               .frame(width: 4, height: groupedHeight)
-            Text("비가용 시간(30분)")
-              .padding(.leading, 15)
-              .padding(.top, 6)
-          }.padding(.vertical, space)
+              .padding(.vertical, slotSpace)
+              
+            Text("비가용 시간(\(duration.time(format: .duration_kr)))")
+              .foregroundStyle(.contentAlternative)
+              .font(.pretendard(size: 12, weight: .medium))
+              .padding(.top, slotCount == 1 ? 12 : 19)
+          }
         }
       }
     }.frame(maxWidth: .infinity)
   }
 }
+
+
 
 #Preview {
   TotalTimeView(homeViewModel: HomeViewModel())
