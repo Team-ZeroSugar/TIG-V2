@@ -14,30 +14,28 @@ struct EditTimeView: View {
   
   var body: some View {
     
-    VStack(spacing: 27) {
+    
+    HeaderView(isPresented: $isPresented)
+    
+    ScrollView {
       
-      HeaderView(isPresented: $isPresented)
+      Text("수면, 식사 시간 등 비가용시간을 선택해 주세요")
+        .foregroundStyle(.contentNormal)
+        .font(.pretendard(size: 14, weight: .regular))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(
+          RoundedRectangle(cornerRadius: 8)
+            .strokeBorder(.borderPrimary, lineWidth: 1)
+        ).padding(.top, 16)
       
-      ScrollView {
-        
-        Text("수면, 식사 시간 등 비가용시간을 선택해 주세요")
-          .foregroundStyle(.contentNormal)
-          .font(.pretendard(size: 14, weight: .regular))
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 20)
-          .padding(.vertical, 16)
-          .background(
-            RoundedRectangle(cornerRadius: 8)
-              .strokeBorder(.borderPrimary, lineWidth: 1)
-          )
-        
-        SelectableTimeSlots(timeSlots: $timeSlots)
-          .padding(.top, 4)
-          
-      }
-      .scrollIndicators(.hidden)
-      .padding(.horizontal, 20)
+      SelectableTimeSlots(timeSlots: $timeSlots)
+        .padding(.top, 4)
+      
     }
+    .scrollIndicators(.hidden)
+    .padding(.horizontal, 20)
   }
 }
 
@@ -62,7 +60,7 @@ private struct HeaderView: View {
         .font(.pretendard(size: 16, weight: .semiBold)),
       alignment: .center
     )
-    .padding(.top, 11)
+    .padding(.vertical, 10)
     .padding(.horizontal, 20)
   }
   
