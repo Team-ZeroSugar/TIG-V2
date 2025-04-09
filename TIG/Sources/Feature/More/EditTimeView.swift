@@ -9,63 +9,50 @@ import SwiftUI
 
 struct EditTimeView: View {
   
+  @Environment(\.dismiss) var dismiss
   @State var timeSlots: [TimeSlot] = TimeSlot.mock
-  @Binding var isPresented: Bool
+  let homeViewModel: HomeViewModel
   
   var body: some View {
     
-    
-    HeaderView(isPresented: $isPresented)
-    
-    ScrollView {
-      
-      Text("수면, 식사 시간 등 비가용시간을 선택해 주세요")
-        .foregroundStyle(.contentNormal)
-        .font(.pretendard(size: 14, weight: .regular))
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-        .background(
-          RoundedRectangle(cornerRadius: 8)
-            .strokeBorder(.borderPrimary, lineWidth: 1)
-        ).padding(.top, 16)
-      
-      SelectableTimeSlots(timeSlots: $timeSlots)
-        .padding(.top, 4)
-      
-    }
-    .scrollIndicators(.hidden)
-    .padding(.horizontal, 20)
-  }
-}
-
-private struct HeaderView: View {
-  @Binding var isPresented: Bool
-  
-  var body: some View {
-    HStack {
-      headerButton(title: "취소") {
-        isPresented = false
+    NavigationStack {
+      ScrollView {
+        Text("수면, 식사 시간 등 비가용시간을 선택해 주세요")
+          .foregroundStyle(.contentNormal)
+          .font(.pretendard(size: 14, weight: .regular))
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 20)
+          .padding(.vertical, 16)
+          .background(
+            RoundedRectangle(cornerRadius: 8)
+              .strokeBorder(.borderPrimary, lineWidth: 1)
+          ).padding(.top, 16)
+        
+        SelectableTimeSlots(timeSlots: $timeSlots)
+          .padding(.top, 4)
       }
-      
-      Spacer()
-      
-      headerButton(title: "저장") {
-        print("저장 버튼")
+      .padding(.horizontal, 20)
+      .navigationTitle("시간 수정")
+      .navigationBarTitleDisplayMode(.inline)
+      .scrollIndicators(.hidden)
+      .toolbar {
+        ToolbarItem(placement: .navigationBarLeading) {
+          navigationButton(title: "취소") {
+            self.dismiss()
+          }
+        }
+        
+        ToolbarItem(placement: .navigationBarTrailing) {
+          navigationButton(title: "저장") {
+            print("hello")
+          }
+        }
       }
     }
-    .overlay(
-      Text("시간 수정")
-        .foregroundStyle(.contentStrong)
-        .font(.pretendard(size: 16, weight: .semiBold)),
-      alignment: .center
-    )
-    .padding(.vertical, 10)
-    .padding(.horizontal, 20)
   }
   
   @ViewBuilder
-  private func headerButton(
+  private func navigationButton(
     title: String,
     action: @escaping () -> Void
   ) -> some View {
@@ -77,6 +64,7 @@ private struct HeaderView: View {
   }
 }
 
+
 #Preview {
-  EditTimeView(isPresented: .constant(true))
+  EditTimeView(homeViewModel: HomeViewModel())
 }
