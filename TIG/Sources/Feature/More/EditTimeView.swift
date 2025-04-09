@@ -10,8 +10,13 @@ import SwiftUI
 struct EditTimeView: View {
   
   @Environment(\.dismiss) var dismiss
-  @State var timeSlots: [TimeSlot] = TimeSlot.mock
+  @State var timeSlots: [TimeSlot]
   let homeViewModel: HomeViewModel
+  
+  init(homeViewModel: HomeViewModel) {
+    self.homeViewModel = homeViewModel
+    self.timeSlots = homeViewModel.state.timeSlots
+  }
   
   var body: some View {
     
@@ -44,13 +49,15 @@ struct EditTimeView: View {
         
         ToolbarItem(placement: .navigationBarTrailing) {
           navigationButton(title: "저장") {
-            print("hello")
+            homeViewModel.send(.dailyTimeSaveTapped(timeSlots))
+            self.dismiss()
           }
         }
       }
     }
   }
   
+  // MARK: (F)navigationButton
   @ViewBuilder
   private func navigationButton(
     title: String,

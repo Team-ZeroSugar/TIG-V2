@@ -17,12 +17,14 @@ struct TotalTimeView: View {
     }
     .padding(.horizontal, 20)
     .scrollIndicators(.hidden)
-    .onAppear {
-      homeViewModel.send(.onAppear)
-    }
   }
 }
 
 #Preview {
-  TotalTimeView(homeViewModel: HomeViewModel())
+  let homeViewModel = HomeViewModel()
+  
+  TotalTimeView(homeViewModel: homeViewModel)
+    .onAppear {
+      homeViewModel.send(.onAppear)
+    }
 }
