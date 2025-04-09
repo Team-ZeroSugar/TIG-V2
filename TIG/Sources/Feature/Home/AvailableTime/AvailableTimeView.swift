@@ -54,7 +54,7 @@ private struct HeaderView: View {
       HStack(spacing: 0) {
         Text("지금은 ")
         Text(isAvailable ? "가용시간" : "비가용시간")
-          .foregroundStyle(isAvailable ? .blueMain : .contentNormal)
+          .foregroundStyle(isAvailable ? .primaryNormal : .contentNormal)
         Text("이에요")
       }
       .font(.pretendard(size: 20, weight: .semiBold))
@@ -116,7 +116,7 @@ private struct TimerView: View {
             lineJoin: .round
         ))
         .rotationEffect(.degrees(-90))
-        .foregroundStyle(.blueMain)
+        .foregroundStyle(.primaryNormal)
     }
   }
   
@@ -127,12 +127,12 @@ private struct TimerView: View {
         .foregroundStyle(.exceptionNormal)
         .padding(.vertical, 6)
         .padding(.horizontal, 12.5)
-        .background(isAvailable ? .blueMain : .primaryInactive)
+        .background(isAvailable ? .primaryNormal : .primaryInactive)
         .clipShape(Capsule())
       
       Text(mainTitle)
         .font(.pretendard(size: 36, weight: .semiBold))
-        .foregroundStyle(isAvailable ? .blueMain : .primaryInactive)
+        .foregroundStyle(isAvailable ? .primaryNormal : .primaryInactive)
       
       Text("\(subTitle)")
         .font(.pretendard(size: 16, weight: .medium))

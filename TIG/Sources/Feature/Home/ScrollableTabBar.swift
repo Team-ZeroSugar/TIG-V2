@@ -74,7 +74,7 @@ struct ScrollableTabBar: View {
           .foregroundStyle(.borderNormal)
         Rectangle()
           .frame(width: size.width / 2, height: 2)
-          .foregroundStyle(.blueMain)
+          .foregroundStyle(.primaryNormal)
           .offset(x: selectedTabOffset)
       }
       .animation(.snappy, value: selectedTabOffset)
