@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimeSlot: Equatable {
+struct TimeSlot: Equatable, Identifiable {
   var id: String = UUID().uuidString
   var start: Int
   var end: Int
@@ -20,7 +20,7 @@ struct TimeSlot: Equatable {
   }
 }
 
-struct GroupedTimeSlot {
+struct GroupedTimeSlot: Hashable {
   var start: Int
   var end: Int
   var isAvailable: Bool
@@ -46,7 +46,7 @@ extension TimeSlot {
   static let mock: [TimeSlot] = [
     // 00시 ~ 01시
     TimeSlot(start: 0, end: 30 * 60, isAvailable: true),
-    TimeSlot(start: 30 * 60, end: 60 * 60, isAvailable: true),
+    TimeSlot(start: 30 * 60, end: 60 * 60, isAvailable: false),
     // 01시 ~ 02시
     TimeSlot(start: 60 * 60, end: 90 * 60, isAvailable: true),
     TimeSlot(start: 90 * 60, end: 120 * 60, isAvailable: true),
@@ -91,9 +91,9 @@ extension TimeSlot {
     TimeSlot(start: 870 * 60, end: 900 * 60, isAvailable: false),
     // 15시 ~ 16시
     TimeSlot(start: 900 * 60, end: 930 * 60, isAvailable: false),
-    TimeSlot(start: 930 * 60, end: 960 * 60, isAvailable: true),
+    TimeSlot(start: 930 * 60, end: 960 * 60, isAvailable: false),
     // 16시 ~ 17시
-    TimeSlot(start: 960 * 60, end: 990 * 60, isAvailable: true),
+    TimeSlot(start: 960 * 60, end: 990 * 60, isAvailable: false),
     TimeSlot(start: 990 * 60, end: 1020 * 60, isAvailable: true),
     // 17시 ~ 18시
     TimeSlot(start: 1020 * 60, end: 1050 * 60, isAvailable: true),

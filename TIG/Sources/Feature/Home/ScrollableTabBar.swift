@@ -91,7 +91,7 @@ struct ScrollableTabBar: View {
             case .available:
               AvailableTimeView(homeViewModel: homeViewModel)
             case .total:
-              Text("하루시간")
+              TotalTimeView(homeViewModel: homeViewModel)
             }
           }
           .frame(width: size.width)
