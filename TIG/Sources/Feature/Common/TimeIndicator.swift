@@ -32,5 +32,8 @@ struct TimeIndicator: View {
 }
 
 #Preview {
+  ScrollView {
     TimeIndicator()
+  }
+  .scrollIndicators(.hidden)
 }

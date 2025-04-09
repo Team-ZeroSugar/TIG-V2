@@ -68,5 +68,9 @@ private struct TimeSlots: View {
 }
 
 #Preview {
-  SelectableTimeSlots(timeSlots: .constant(TimeSlot.mock))
+  ScrollView {
+    SelectableTimeSlots(timeSlots: .constant(TimeSlot.mock))
+  }
+  .scrollIndicators(.hidden)
+  .padding(.horizontal, 20)
 }
