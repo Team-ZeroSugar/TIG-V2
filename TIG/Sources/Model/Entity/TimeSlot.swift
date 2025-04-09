@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimeSlot: Equatable {
+struct TimeSlot: Equatable, Identifiable {
   var id: String = UUID().uuidString
   var start: Int
   var end: Int

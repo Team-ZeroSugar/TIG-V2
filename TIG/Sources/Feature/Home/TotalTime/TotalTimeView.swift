@@ -82,7 +82,10 @@ private struct AvailableSlot: View {
           Spacer()
           
           durationText(duration)
-            .frame(height: SlotLayout.groupedHeight(for: slotCount) - 47, alignment: .bottom)
+            .frame(
+              height: SlotLayout.groupedHeight(for: slotCount) - 47,
+              alignment: .bottom
+            )
         }
       }
     }
