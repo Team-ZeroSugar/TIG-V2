@@ -124,7 +124,7 @@ private struct WeekView: View {
     }
     .foregroundStyle(
       homeViewModel.state.selectedDate == date
-      ? .gray01 : .gray05
+      ? .exceptionNormal : .contentNormal
     )
     .frame(maxWidth: .infinity, alignment: .center)
     .padding(.vertical, 10)
