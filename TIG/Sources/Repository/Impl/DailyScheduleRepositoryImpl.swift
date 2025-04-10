@@ -16,11 +16,10 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
     self.modelContext = modelContext
   }
   
-  
   func createDailySchedule(_ dailySchedule: DailySchedule) {
     print("Impl:", #function)
-    
-    let result = findDailySchedule(dailySchedule)
+    let date = dailySchedule.date
+    let result = findDailyScheduleByDate(date)
     switch result {
     case .success:
       print(SwiftDataError.modelAlreadyExist)
@@ -66,12 +65,12 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
 
   
   func updateDailySchedule(
-    dailySchedule: DailySchedule,
+    date: Date,
     timeSlots: [TimeSlot]
   ) {
     print("Impl:", #function)
     
-    let result = findDailySchedule(dailySchedule)
+    let result = findDailyScheduleByDate(date)
     
     switch result {
     case .success(let model):
@@ -85,8 +84,8 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
   
   func deleteDailySchedule(_ dailySchedule: DailySchedule) {
     print("Impl:", #function)
-    
-    let result = findDailySchedule(dailySchedule)
+    let date = dailySchedule.date
+    let result = findDailyScheduleByDate(date)
     
     switch result {
     case .success(let model):
@@ -99,11 +98,10 @@ final class DailyScheduleRepositoryImpl: DailyScheduleRepository {
 }
 
 extension DailyScheduleRepositoryImpl {
-  private func findDailySchedule(
-    _ dailySchedule: DailySchedule
+  private func findDailyScheduleByDate(
+    _ date: Date
   ) -> Result<DailyScheduleDTO, SwiftDataError> {
     print("Impl:", #function)
-    let date = dailySchedule.date
     let predicate = #Predicate<DailyScheduleDTO> { $0.date == date }
     let descriptor = FetchDescriptor(predicate: predicate)
     

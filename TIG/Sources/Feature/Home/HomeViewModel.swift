@@ -38,6 +38,9 @@ final class HomeViewModel {
     
     // 탭바 액션
     case changeTab(HomeTab)
+    
+    // 시간 수정 액션
+    case dailyTimeSaveTapped([TimeSlot])
   }
   
   private(set) var state: State = .init()
@@ -72,6 +75,9 @@ final class HomeViewModel {
       
     case .changeTab(let tab):
       state.selectedTab = tab
+      
+    case .dailyTimeSaveTapped(let timeSlots):
+      updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
     }
   }
 }
@@ -187,5 +193,18 @@ private extension HomeViewModel {
     } catch {
       return .failure(error)
     }
+  }
+  
+  /// TimeSlots을 업데이트 합니다.
+  /// - Parameters:
+  ///   - date: 업데이트할 날짜.
+  ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
+  func updateTimeSlot(date: Date, timeSlots: [TimeSlot]) {
+    dailyScheduleRepository.updateDailySchedule(
+      date: state.selectedDate,
+      timeSlots: timeSlots
+    )
+    state.groupedTimeSlots = timeSlots.groupedTimeSlots
+    state.timeSlots = timeSlots
   }
 }
