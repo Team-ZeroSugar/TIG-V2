@@ -8,11 +8,34 @@
 import SwiftUI
 
 struct SettingView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  @State private var mockDate: Date = Date()
+  @State var isPresented: Bool = false
+  
+  var body: some View {
+    VStack {
+      List {
+        Section("수면 시간 수정") {
+          HStack {
+            Text("기상 시간")
+            Spacer()
+            DatePicker("", selection: $mockDate, displayedComponents: .hourAndMinute)
+          }
+          HStack {
+            Text("기상 시간")
+            Spacer()
+            DatePicker("", selection: $mockDate, displayedComponents: .hourAndMinute)
+          }
+        }
+      }
     }
+    .navigationTitle("수면 시간")
+    .navigationBarTitleDisplayMode(.inline)
+
+  }
 }
 
 #Preview {
+  NavigationStack {
     SettingView()
+  }
 }
