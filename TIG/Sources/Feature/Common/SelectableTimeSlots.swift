@@ -24,7 +24,7 @@ struct SelectableTimeSlots: View {
         TimeIndicator()
         TimeSlots(timeSlots: $timeSlots)
       }
-    }
+    }.padding(.bottom, 29)
   }
   
   @ViewBuilder
@@ -52,7 +52,6 @@ private struct TimeSlots: View {
       ForEach($timeSlots) { $timeSlot in
         Button {
           timeSlot.isAvailable.toggle()
-          print(timeSlot)
         } label: {
           RoundedRectangle(cornerRadius: 8)
             .strokeBorder(
