@@ -16,10 +16,10 @@ struct WeeklyRepeatView: View {
   var body: some View {
     VStack(spacing: 0) {
       WeeklyHeader(selectedDay: $selectedDay)
-        
+      
       DayPageView(selectedDay: $selectedDay, isEditMode: $isEditMode)
     }
-    .background(.backgroundNormal)
+    .background(.backgroundAlternative)
     .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
@@ -68,6 +68,8 @@ private struct WeeklyHeader: View {
       }
     }
     .padding(26)
+    .background(.backgroundNormal)
+    .padding(.bottom, 5)
   }
 }
 
@@ -77,26 +79,43 @@ private struct DayPageView: View {
   
   @Binding var selectedDay: WeekDay
   @Binding var isEditMode: Bool
+  @State var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [
+    .sun: TimeSlot.mock,
+    .mon: TimeSlot.mock,
+    .tue: TimeSlot.mock,
+    .wed: TimeSlot.mock,
+    .thu: TimeSlot.mock,
+    .fri: TimeSlot.mock,
+    .sat: TimeSlot.mock,
+  ]
   
   var body: some View {
     TabView(selection: $selectedDay) {
       ForEach(WeekDay.allCases, id: \.self) { day in
-        DaySlotView(isEditMode: $isEditMode)
+        TimeSlotsView(isEditMode: $isEditMode, timeSlots: binding(for: day))
           .tag(day)
       }
     }
-    .background(.backgroundAlternative)
-    .animation(.default, value: selectedDay)
+    .background(.backgroundNormal)
     .ignoresSafeArea()
+    .animation(.spring(duration: 2), value: selectedDay)
     .tabViewStyle(.page(indexDisplayMode: .never))
+  }
+  
+  // 요일에 해당하는 타임 슬롯 배열을 바인딩으로 반환해주는 함수
+  private func binding(for key: WeekDay) -> Binding<[TimeSlot]> {
+    return Binding(
+      get: { return self.weeklyTimeSlots[key] ?? [] },
+      set: { self.weeklyTimeSlots[key] = $0 }
+    )
   }
 }
 
-// MARK: - (S)DaySlotView
-private struct DaySlotView: View {
+// MARK: - (S)TimeSlotsView
+private struct TimeSlotsView: View {
   
   @Binding var isEditMode: Bool
-  @State var timeSlots = TimeSlot.mock
+  @Binding var timeSlots: [TimeSlot]
   
   var body: some View {
     ScrollView {
@@ -106,13 +125,11 @@ private struct DaySlotView: View {
             .padding(.top, 16)
         } else {
           GroupedTimeSlots(
-            groupedTimeSlots: TimeSlot.mock.groupedTimeSlots
-          ).padding(.top, 18)
+            groupedTimeSlots: timeSlots.groupedTimeSlots
+          ).padding(.top, 19)
         }
       }
       .padding(.horizontal, 20)
-      .background(.backgroundNormal)
-      .padding(.top, 5)
     }
     .ignoresSafeArea()
     .scrollIndicators(.hidden)

@@ -12,7 +12,7 @@ struct GroupedTimeSlots: View {
   let groupedTimeSlots: [GroupedTimeSlot]
   
   var body: some View {
-    HStack(alignment: .top, spacing: 18) {
+    HStack(alignment: .top, spacing: 17) {
       TimeIndicator()
       
       VStack(alignment: .leading, spacing: SlotLayout.space * 2) {
@@ -71,7 +71,7 @@ private struct AvailableSlot: View {
     .frame(height: SlotLayout.groupedHeight(for: slotCount))
     .background(
       RoundedRectangle(cornerRadius: 8)
-        .foregroundStyle(.blueTimeSlot)
+        .foregroundStyle(.primaryNeutral)
     )
   }
   
