@@ -41,13 +41,13 @@ struct EditTimeView: View {
       .navigationBarTitleDisplayMode(.inline)
       .scrollIndicators(.hidden)
       .toolbar {
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .topBarLeading) {
           navigationButton(title: "취소") {
             self.dismiss()
           }
         }
         
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .topBarTrailing) {
           navigationButton(title: "저장") {
             homeViewModel.send(.dailyTimeSaveTapped(timeSlots))
             self.dismiss()

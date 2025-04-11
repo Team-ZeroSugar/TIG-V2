@@ -8,11 +8,136 @@
 import SwiftUI
 
 struct WeeklyRepeatView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  @State var selectedDay: WeekDay = .sun
+  @State var isEditMode = false
+  
+  let homeViewModel: HomeViewModel
+  
+  var body: some View {
+    VStack(spacing: 0) {
+      WeeklyHeader(selectedDay: $selectedDay)
+      
+      DayPageView(selectedDay: $selectedDay, isEditMode: $isEditMode)
     }
+    .background(.backgroundAlternative)
+    .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
+    .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button {
+          isEditMode.toggle()
+        } label: {
+          Text(isEditMode ? "저장" : "수정")
+            .foregroundStyle(.primaryNormal)
+            .font(.pretendard(size: 16, weight: .medium))
+        }
+      }
+    }
+  }
+}
+
+// MARK: - (S)WeeklyHeader
+private struct WeeklyHeader: View {
+  
+  @Binding var selectedDay: WeekDay
+  
+  var body: some View {
+    HStack {
+      ForEach(WeekDay.allCases, id: \.self) { day in
+        Text(day.text)
+          .frame(maxWidth: .infinity)
+          .foregroundStyle(
+            day == selectedDay ? .contentException : .contentNormal
+          )
+          .font(
+            .pretendard(
+              size: 14,
+              weight: day == selectedDay ? .semiBold : .medium
+            )
+          )
+          .onTapGesture {
+            selectedDay = day
+          }
+          .background(
+            Circle()
+              .fill(day == selectedDay ? .primaryNormal : .clear)
+              .frame(width: 42, height: 42)
+              .scaleEffect(selectedDay != day ? 0.85 : 1.0)
+              .animation(.easeInOut(duration: 0.2), value: selectedDay)
+          )
+      }
+    }
+    .padding(26)
+    .background(.backgroundNormal)
+    .padding(.bottom, 5)
+  }
+}
+
+
+// MARK: - (S)DayPageView
+private struct DayPageView: View {
+  
+  @Binding var selectedDay: WeekDay
+  @Binding var isEditMode: Bool
+  @State var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [
+    .sun: TimeSlot.mock,
+    .mon: TimeSlot.mock,
+    .tue: TimeSlot.mock,
+    .wed: TimeSlot.mock,
+    .thu: TimeSlot.mock,
+    .fri: TimeSlot.mock,
+    .sat: TimeSlot.mock,
+  ]
+  
+  var body: some View {
+    TabView(selection: $selectedDay) {
+      ForEach(WeekDay.allCases, id: \.self) { day in
+        TimeSlotsView(isEditMode: $isEditMode, timeSlots: binding(for: day))
+          .tag(day)
+      }
+    }
+    .background(.backgroundNormal)
+    .ignoresSafeArea()
+    .animation(.spring(duration: 2), value: selectedDay)
+    .tabViewStyle(.page(indexDisplayMode: .never))
+  }
+  
+  // 요일에 해당하는 타임 슬롯 배열을 바인딩으로 반환해주는 함수
+  private func binding(for key: WeekDay) -> Binding<[TimeSlot]> {
+    return Binding(
+      get: { return self.weeklyTimeSlots[key] ?? [] },
+      set: { self.weeklyTimeSlots[key] = $0 }
+    )
+  }
+}
+
+// MARK: - (S)TimeSlotsView
+private struct TimeSlotsView: View {
+  
+  @Binding var isEditMode: Bool
+  @Binding var timeSlots: [TimeSlot]
+  
+  var body: some View {
+    ScrollView {
+      VStack {
+        if isEditMode {
+          SelectableTimeSlots(timeSlots: $timeSlots)
+            .padding(.top, 16)
+        } else {
+          GroupedTimeSlots(
+            groupedTimeSlots: timeSlots.groupedTimeSlots
+          ).padding(.top, 19)
+        }
+      }
+      .padding(.horizontal, 20)
+    }
+    .ignoresSafeArea()
+    .scrollIndicators(.hidden)
+  }
 }
 
 #Preview {
-    WeeklyRepeatView()
+  NavigationStack {
+    WeeklyRepeatView(homeViewModel: HomeViewModel())
+  }
 }
