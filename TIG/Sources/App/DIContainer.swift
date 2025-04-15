@@ -7,19 +7,41 @@
 
 import Foundation
 
-@Observable
-final class DIContainer {
-  private let storage: SwiftDataStorage
+class DIContainer {
   
-  private let appConfigRepository: AppConfigRepository
-  private let dailyScheduleRepository: DailyScheduleRepository
-  private let weeklyScheduleRepository: WeeklyScheduleRepository
+  static let shared = DIContainer()
   
-  init() {
-    self.storage = SwiftDataStorage()
+  private var dependencies = [String: Any]()
+  
+  private init() {}
+  
+  func register<T>(_ dependency: T, for type: T.Type = T.self) {
+    let key = String(describing: type)
+    dependencies[key] = dependency
+  }
+  
+  func resolve<T>() -> T {
+    let key = String(describing: T.self)
+    guard let dependency = dependencies[key] else {
+      fatalError("\(key)는 등록되지 않았습니다.")
+    }
     
-    self.appConfigRepository = StubAppConfigRepository()
-    self.dailyScheduleRepository = StubDailyScheduleRepository()
-    self.weeklyScheduleRepository = StubWeeklyScheduleRepository()
+    return dependency as! T
+  }
+}
+
+
+extension DIContainer {
+  static func configure() {
+    DIContainer.shared.register(
+      StubAppConfigRepository(), for: AppConfigRepository.self
+    )
+    DIContainer.shared.register(
+      StubDailyScheduleRepository(), for: DailyScheduleRepository.self
+    )
+    DIContainer.shared.register(
+      StubWeeklyScheduleRepository(), for: WeeklyScheduleRepository.self
+    )
+    DIContainer.shared.register(SharedState())
   }
 }

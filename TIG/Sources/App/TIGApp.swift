@@ -9,12 +9,14 @@ import SwiftUI
 
 @main
 struct TIGApp: App {
-  @State private var container = DIContainer()
+  
+  init() {
+    DIContainer.configure()
+  }
   
   var body: some Scene {
     WindowGroup {
       HomeView()
-        .environment(container)
     }
   }
 }

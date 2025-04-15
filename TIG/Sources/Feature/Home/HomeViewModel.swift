@@ -45,19 +45,9 @@ final class HomeViewModel {
   
   private(set) var state: State = .init()
   
-  private let dailyScheduleRepository: DailyScheduleRepository
-  private let weeklyScheduleRepository: WeeklyScheduleRepository
-  private let appConfigRepository: AppConfigRepository
-  
-  init(
-    dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository(),
-    weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository(),
-    appconfigRepository: AppConfigRepository = StubAppConfigRepository()
-  ) {
-    self.dailyScheduleRepository = dailyScheduleRepository
-    self.weeklyScheduleRepository = weeklyScheduleRepository
-    self.appConfigRepository = appconfigRepository
-  }
+  private let dailyScheduleRepository: DailyScheduleRepository = DIContainer.shared.resolve()
+  private let weeklyScheduleRepository: WeeklyScheduleRepository = DIContainer.shared.resolve()
+  private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
   
   func send(_ action: Action) {
     switch action {
