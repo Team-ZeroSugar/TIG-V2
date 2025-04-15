@@ -11,7 +11,7 @@ struct AvailableTimeView: View {
   @State var isPresented = false
   let homeViewModel: HomeViewModel
   private var isToday: Bool {
-    homeViewModel.state.selectedDate.isToday
+    homeViewModel.sharedState.selectedDate.isToday
   }
   
   var body: some View {
@@ -39,7 +39,7 @@ private struct HeaderView: View {
   private var isAvailable: Bool
   
   init(homeViewModel: HomeViewModel) {
-    let currentTimeSlot = homeViewModel.state.currentTimeSlot
+    let currentTimeSlot = homeViewModel.sharedState.currentTimeSlot
     self.startTime = currentTimeSlot.start.time(format: .ampm_kr)
     self.endTime = currentTimeSlot.end.time(format: .ampm_kr)
     self.isAvailable = currentTimeSlot.isAvailable
@@ -76,20 +76,20 @@ private struct TimerView: View {
   }
   
   private var isAvailable: Bool {
-    homeViewModel.state.currentTimeSlot.isAvailable
+    homeViewModel.sharedState.currentTimeSlot.isAvailable
   }
   
   private var progressPercent: CGFloat {
     if !isAvailable { return 1 }
     
     let now = homeViewModel.state.currentTimeInSeconds
-    let start = homeViewModel.state.currentTimeSlot.start
-    let end = homeViewModel.state.currentTimeSlot.end
+    let start = homeViewModel.sharedState.currentTimeSlot.start
+    let end = homeViewModel.sharedState.currentTimeSlot.end
     return CGFloat(now - start) / CGFloat(end - start)
   }
   
   private var isLastTimeSlot: Bool {
-    let currentTimeSlot = homeViewModel.state.currentTimeSlot
+    let currentTimeSlot = homeViewModel.sharedState.currentTimeSlot
     return currentTimeSlot.end == Time.hour * 24
   }
   
@@ -154,16 +154,16 @@ private struct TimerView: View {
       // 아닌 경우
       else {
         let nowSeconds = homeViewModel.state.currentTimeInSeconds
-        guard let index = homeViewModel.state.groupedTimeSlots.firstIndex(where: {
+        guard let index = homeViewModel.sharedState.groupedTimeSlots.firstIndex(where: {
           $0.start <= nowSeconds && nowSeconds < $0.end
         }) else { return "" }
-        let nextTimeSlot = homeViewModel.state.groupedTimeSlots[index + 1]
+        let nextTimeSlot = homeViewModel.sharedState.groupedTimeSlots[index + 1]
         return nextTimeSlot.duration.time(format: .duration_kr)
       }
     
     // 현재 가용시간인 경우
     } else {
-      let remainSeconds = homeViewModel.state.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
+      let remainSeconds = homeViewModel.sharedState.currentTimeSlot.end - homeViewModel.state.currentTimeInSeconds
       return remainSeconds.time(format: .duration_kr)
     }
   }
@@ -176,10 +176,10 @@ private struct TimerView: View {
       // 아닌 경우
       else {
         let nowSeconds = homeViewModel.state.currentTimeInSeconds
-        guard let index = homeViewModel.state.groupedTimeSlots.firstIndex(where: {
+        guard let index = homeViewModel.sharedState.groupedTimeSlots.firstIndex(where: {
           $0.start <= nowSeconds && nowSeconds < $0.end
         }) else { return "" }
-        let nextTimeSlot = homeViewModel.state.groupedTimeSlots[index + 1]
+        let nextTimeSlot = homeViewModel.sharedState.groupedTimeSlots[index + 1]
         let start = nextTimeSlot.start.time(format: .ampm_kr)
         let end = nextTimeSlot.end.time(format: .ampm_kr)
         return "\(start) - \(end)"
@@ -187,7 +187,7 @@ private struct TimerView: View {
       
     // 현재 가용시간인 경우
     } else {
-      let currentTimeSlot = homeViewModel.state.currentTimeSlot
+      let currentTimeSlot = homeViewModel.sharedState.currentTimeSlot
       return "/ \(currentTimeSlot.duration.time(format: .duration_kr))"
     }
   }
@@ -201,7 +201,7 @@ private struct FooterView: View {
   
   private var remainTime: String {
     let now = homeViewModel.state.currentTimeInSeconds
-    return homeViewModel.state.groupedTimeSlots
+    return homeViewModel.sharedState.groupedTimeSlots
       .filter { $0.isAvailable && now < $0.end }
       .reduce(0) {
         let anchor = max(now, $1.start)
@@ -211,14 +211,14 @@ private struct FooterView: View {
   }
   
   private var totalTime: String {
-    homeViewModel.state.timeSlots
+    homeViewModel.sharedState.timeSlots
       .filter { $0.isAvailable }
       .reduce(0) { result, _ in result + Time.interval }
       .time(format: .duration_kr)
   }
   
   private var isToday: Bool {
-    homeViewModel.state.selectedDate.isToday
+    homeViewModel.sharedState.selectedDate.isToday
   }
   
   var body: some View {
@@ -240,7 +240,7 @@ private struct FooterView: View {
       
       Spacer()
       
-      if Date().formattedDate <= homeViewModel.state.selectedDate {
+      if Date().formattedDate <= homeViewModel.sharedState.selectedDate {
         Button {
           isPresented = true
         } label: {
@@ -272,3 +272,4 @@ private struct FooterView: View {
 #Preview {
   AvailableTimeView(homeViewModel: HomeViewModel())
 }
+// 4시간 51분

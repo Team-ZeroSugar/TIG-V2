@@ -15,7 +15,7 @@ struct EditTimeView: View {
   
   init(homeViewModel: HomeViewModel) {
     self.homeViewModel = homeViewModel
-    self.timeSlots = homeViewModel.state.timeSlots
+    self.timeSlots = homeViewModel.sharedState.timeSlots
   }
   
   var body: some View {
