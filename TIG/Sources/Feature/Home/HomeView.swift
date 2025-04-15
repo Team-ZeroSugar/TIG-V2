@@ -48,9 +48,6 @@ struct HomeView: View {
       .onAppear {
         homeViewModel.send(.onAppear)
       }
-      .onDisappear {
-        homeViewModel.send(.onDisappear)
-      }
     }
   }
   

@@ -9,8 +9,10 @@ import Foundation
 
 @Observable
 final class SharedState {
+  // 선택된 날짜
   var selectedDate: Date = Date().formattedDate
   
+  // 보여지는 timeSlot
   var timeSlots: [TimeSlot] = []
   var groupedTimeSlots: [GroupedTimeSlot] = []
   var currentTimeSlot: GroupedTimeSlot { self.groupedTimeSlots.currentTimeSlot }
