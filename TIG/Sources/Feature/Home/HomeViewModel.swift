@@ -43,11 +43,13 @@ final class HomeViewModel {
     case dailyTimeSaveTapped([TimeSlot])
   }
   
+  private(set) var sharedState: SharedState = DIContainer.shared.resolve()
   private(set) var state: State = .init()
   
   private let dailyScheduleRepository: DailyScheduleRepository = DIContainer.shared.resolve()
   private let weeklyScheduleRepository: WeeklyScheduleRepository = DIContainer.shared.resolve()
   private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
+  
   
   func send(_ action: Action) {
     switch action {
