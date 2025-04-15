@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct AvailableTimeView: View {
-  @State private var timerViewModel: TimerViewModel = TimerViewModel()
-  @State var isPresented = false
+  @State private var editTimeViewModel = EditTimeViewModel()
+  @State private var timerViewModel = TimerViewModel()
+  @State private var isPresented = false
   let homeViewModel: HomeViewModel
   private var isToday: Bool {
     homeViewModel.sharedState.selectedDate.isToday
@@ -33,7 +34,7 @@ struct AvailableTimeView: View {
       if $1 == 0 { homeViewModel.send(.changeDate(.now)) }
     }
     .fullScreenCover(isPresented: $isPresented) {
-      EditTimeView(homeViewModel: homeViewModel)
+      EditTimeView(editTimeViewModel: editTimeViewModel)
     }
   }
 }
