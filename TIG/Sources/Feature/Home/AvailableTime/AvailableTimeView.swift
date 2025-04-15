@@ -28,11 +28,12 @@ struct AvailableTimeView: View {
     }
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.bottom, 10)
-    .onChange(of: timerViewModel.state.currentTimeInSeconds) { _, now in
-      print(now)
+    .onChange(of: timerViewModel.state.currentTimeInSeconds) {
+      // 24시가 지나면, selectedDate 변경
+      if $1 == 0 { homeViewModel.send(.changeDate(.now)) }
     }
     .fullScreenCover(isPresented: $isPresented) {
-      //EditTimeView(homeViewModel: homeViewModel)
+      EditTimeView(homeViewModel: homeViewModel)
     }
   }
 }
@@ -284,4 +285,3 @@ private struct FooterView: View {
     homeViewModel: HomeViewModel()
   )
 }
-// 4시간 51분

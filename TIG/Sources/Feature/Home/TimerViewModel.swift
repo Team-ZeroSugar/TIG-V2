@@ -42,17 +42,7 @@ private extension TimerViewModel {
       .publish(every: 1, on: .main, in: .common)
       .autoconnect()
       .sink(receiveValue: { [weak self] now in
-        // 현재 시간(초) 업데이트
         self?.state.currentTimeInSeconds = now.totalSeconds
-        
-//        // 현재 선택된 날짜가 타이머 날짜(현재 날짜)와 일치하지 않는 경우 -> 다음날로 넘어가는 시점
-//        if self?.sharedState.selectedDate != now.formattedDate {
-//          // 타임슬롯 초기화(업데이트)
-//          self?.initializeTimeSlot(date: now)
-//          
-//          // 현재 선택된 날짜 업데이트
-//          self?.sharedState.selectedDate = now.formattedDate
-//        }
       })
   }
   

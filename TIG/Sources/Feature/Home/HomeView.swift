@@ -105,14 +105,14 @@ private struct CalendarPickerView: View {
         "",
         selection: .init(
           get: { homeViewModel.sharedState.selectedDate },
-          set: { homeViewModel.send(.selectDate($0)) }
+          set: { homeViewModel.send(.changeDate($0)) }
         ),
         displayedComponents: .date
       )
       .datePickerStyle(.graphical)
       
       Button {
-        homeViewModel.send(.selectDate(.now))
+        homeViewModel.send(.changeDate(.now))
         isPresented = false
       } label: {
         Label(

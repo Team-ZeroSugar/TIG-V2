@@ -19,7 +19,7 @@ final class HomeViewModel {
     case onAppear
     
     // 주간 캘린더 액션
-    case selectDate(Date)
+    case changeDate(Date)
     
     // 탭바 액션
     case changeTab(HomeTab)
@@ -42,7 +42,7 @@ final class HomeViewModel {
       // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
       initializeTimeSlot(date: sharedState.selectedDate)
       
-    case .selectDate(let date):
+    case .changeDate(let date):
       sharedState.selectedDate = date.formattedDate
       initializeTimeSlot(date: date)
       
