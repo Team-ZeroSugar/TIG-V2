@@ -42,7 +42,6 @@ private extension EditTimeViewModel {
       date: sharedState.selectedDate,
       timeSlots: timeSlots
     )
-    sharedState.groupedTimeSlots = timeSlots.groupedTimeSlots
     sharedState.timeSlots = timeSlots
   }
 }

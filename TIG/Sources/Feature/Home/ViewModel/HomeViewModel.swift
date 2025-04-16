@@ -29,9 +29,9 @@ final class HomeViewModel {
   private(set) var sharedState: SharedState = DIContainer.shared.resolve()
   private(set) var state: State = .init()
   
+  private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
   private let dailyScheduleRepository: DailyScheduleRepository = DIContainer.shared.resolve()
   private let weeklyScheduleRepository: WeeklyScheduleRepository = DIContainer.shared.resolve()
-  private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
   
   
   func send(_ action: Action) {
@@ -60,7 +60,6 @@ private extension HomeViewModel {
     switch result {
     case .success(let dailySchedule):
       sharedState.timeSlots = dailySchedule.timeSlots
-      sharedState.groupedTimeSlots = sharedState.timeSlots.groupedTimeSlots
     case .failure:
       break
     }

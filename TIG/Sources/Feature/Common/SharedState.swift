@@ -12,8 +12,8 @@ final class SharedState {
   // 선택된 날짜
   var selectedDate: Date = Date().formattedDate
   
-  // 보여지는 timeSlot
+  // 선택된 날짜에 따른 timeSlots
   var timeSlots: [TimeSlot] = []
-  var groupedTimeSlots: [GroupedTimeSlot] = []
+  var groupedTimeSlots: [GroupedTimeSlot] { self.timeSlots.groupedTimeSlots }
   var currentTimeSlot: GroupedTimeSlot { self.groupedTimeSlots.currentTimeSlot }
 }
