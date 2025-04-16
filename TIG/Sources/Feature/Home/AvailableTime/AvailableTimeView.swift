@@ -30,6 +30,7 @@ struct AvailableTimeView: View {
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.bottom, 10)
     .onChange(of: timerViewModel.state.currentTimeInSeconds) {
+      // TODO: 이 방식이 괜찮은지? 좀더 생각해봐야할 듯
       // 24시가 지나면, selectedDate 변경
       if $1 == 0 { homeViewModel.send(.changeDate(.now)) }
     }
