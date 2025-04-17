@@ -9,4 +9,5 @@ import WidgetKit
 
 struct TIGEntry: TimelineEntry {
   let date: Date
+  let groupedTimeSlot: GroupedTimeSlot
 }

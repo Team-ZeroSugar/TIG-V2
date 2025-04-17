@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct TIGWidgetBundle: WidgetBundle {
   var body: some Widget {
-    StatusWidget()
-    SummaryWidget()
+    TIGStatusWidget()
+    TIGSummaryWidget()
   }
 }

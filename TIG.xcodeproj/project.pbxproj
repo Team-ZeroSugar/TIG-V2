@@ -74,6 +74,10 @@
 				"Resources/Font/Pretendard-Bold.otf",
 				"Resources/Font/Pretendard-Medium.otf",
 				"Resources/Font/Pretendard-SemiBold.otf",
+				Sources/Model/Entity/TimeSlot.swift,
+				Sources/Utility/Constant/Time.swift,
+				"Sources/Utility/Extension/Array+Ext.swift",
+				"Sources/Utility/Extension/Date+Ext.swift",
 			);
 			target = 359369E12C759AEB00BE24FF /* TIGWidgetExtension */;
 		};
