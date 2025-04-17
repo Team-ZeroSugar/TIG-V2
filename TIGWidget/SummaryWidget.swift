@@ -8,23 +8,7 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-  func placeholder(in context: Context) -> TIGEntry {
-    TIGEntry(date: .now)
-  }
-  
-  func getSnapshot(in context: Context, completion: @escaping (TIGEntry) -> ()) {
-  }
-  
-  func getTimeline(in context: Context, completion: @escaping (WidgetKit.Timeline<Entry>) -> ()) {
-  }
-}
-
-struct TIGEntry: TimelineEntry {
-  let date: Date
-}
-
-struct TIGWidgetEntryView : View {
+struct SummaryWidgetEntryView : View {
   
   @Environment(\.widgetFamily) var widgetFamily
   
@@ -42,29 +26,34 @@ struct TIGWidgetEntryView : View {
   }
 }
 
-struct TIGWidget: Widget {
+struct SummaryWidget: Widget {
   let kind: String = "TIGWidget"
   
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      //            if #available(iOS 17.0, *) {
-      TIGWidgetEntryView(entry: entry)
+      SummaryWidgetEntryView(entry: entry)
         .containerBackground(.fill.tertiary, for: .widget)
-      //            } else {
-      //                TIGWidgetEntryView(entry: entry)
-      //                    .padding()
-      //                    .background()
-      //            }
     }
     .configurationDisplayName("남은 활용 가능 시간")
     .description("오늘 활용할 수 있는 총 시간과\n 남은 활용 가능 시간을 표시합니다.")
-    .supportedFamilies([.systemSmall, .accessoryRectangular])
+    .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
   }
 }
 
 #Preview(as: .systemSmall) {
-  TIGWidget()
+  SummaryWidget()
 } timeline: {
   TIGEntry(date: .now)
 }
 
+#Preview(as: .systemMedium) {
+  SummaryWidget()
+} timeline: {
+  TIGEntry(date: .now)
+}
+
+#Preview(as: .accessoryRectangular) {
+  SummaryWidget()
+} timeline: {
+  TIGEntry(date: .now)
+}
