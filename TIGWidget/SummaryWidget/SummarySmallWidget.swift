@@ -12,8 +12,36 @@ struct SummarySmallWidget: View {
   
   var entry: TIGEntry
   
+  var remainTimeString: String {
+    let currentTime = Date().totalSeconds
+    let remainTime = entry.currentTimeSlot.end - currentTime
+    return remainTime.time(format: .duration_kr)
+  }
+  var totalTimeString: String {
+    entry.currentTimeSlot.duration.time(format: .duration_kr)
+  }
+  
   var body: some View {
-    Text("\(entry.date)")
+    VStack(spacing: 0) {
+      Text("현재 가용시간")
+        .padding(.horizontal, 9)
+        .padding(.vertical, 4)
+        .font(.pretendard(size: 10, weight: .medium))
+        .foregroundStyle(.contentException)
+        .background(.primaryNormal)
+        .clipShape(Capsule())
+      
+      Text(remainTimeString)
+        .foregroundStyle(.primaryNormal)
+        .font(.pretendard(size: 24, weight: .semiBold))
+        .padding(.top, 10)
+      
+      Text("/ \(totalTimeString)")
+        .foregroundStyle(.contentNormal)
+        .font(.pretendard(size: 12, weight: .medium))
+        .padding(.top, 6)
+        .padding(.bottom, 10)
+    }
   }
 }
 
@@ -22,6 +50,6 @@ struct SummarySmallWidget: View {
 } timeline: {
   TIGEntry(
     date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
+    currentTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
   )
 }

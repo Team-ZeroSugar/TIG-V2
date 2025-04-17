@@ -13,7 +13,7 @@ struct SummaryLockWidget: View {
   var entry: TIGEntry
   
   var totalTimeString: String {
-    entry.groupedTimeSlot.duration.time(format: .duration_kr)
+    entry.currentTimeSlot.duration.time(format: .duration_kr)
   }
   
   var body: some View {
@@ -31,6 +31,6 @@ struct SummaryLockWidget: View {
 } timeline: {
   TIGEntry(
     date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
+    currentTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
   )
 }

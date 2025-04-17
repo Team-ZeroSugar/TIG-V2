@@ -12,7 +12,7 @@ struct TIGStatusProvider: TimelineProvider {
   func placeholder(in context: Context) -> TIGEntry {
     TIGEntry(
       date: .now,
-      groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
+      currentTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
     )
   }
   

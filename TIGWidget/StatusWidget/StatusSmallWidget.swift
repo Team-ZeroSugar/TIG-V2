@@ -12,12 +12,12 @@ struct StatusSmallWidget: View {
   
   var entry: TIGEntry
   
-  var isAvailable: Bool { entry.groupedTimeSlot.isAvailable }
+  var isAvailable: Bool { entry.currentTimeSlot.isAvailable }
   var startTimeString: String {
-    entry.groupedTimeSlot.start.time(format: .ampm_kr)
+    entry.currentTimeSlot.start.time(format: .ampm_kr)
   }
   var endTimeString: String {
-    entry.groupedTimeSlot.end.time(format: .ampm_kr)
+    entry.currentTimeSlot.end.time(format: .ampm_kr)
   }
   
   var body: some View {
@@ -55,6 +55,6 @@ struct StatusSmallWidget: View {
 } timeline: {
   TIGEntry(
     date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
+    currentTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
   )
 }
