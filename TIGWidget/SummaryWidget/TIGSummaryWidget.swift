@@ -41,11 +41,11 @@ struct TIGSummaryWidgetEntryView : View {
   var body: some View {
     switch widgetFamily {
     case .systemSmall:
-      Text("Small")
+      SummarySmallWidget(entry: entry)
     case .systemMedium:
-      Text("Rectangular")
+      SummaryMediumWidget(entry: entry)
     case .accessoryRectangular:
-      Text("accessoryRectangular")
+      SummaryLockWidget(entry: entry)
     default:
       VStack {}
     }
@@ -58,37 +58,10 @@ struct TIGSummaryWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: TIGSummaryProvider()) { entry in
       TIGSummaryWidgetEntryView(entry: entry)
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(.backgroundNormal, for: .widget)
     }
     .configurationDisplayName("남은 활용 가능 시간")
     .description("오늘 활용할 수 있는 총 시간과\n 남은 활용 가능 시간을 표시합니다.")
     .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
   }
-}
-
-#Preview(as: .systemSmall) {
-  TIGSummaryWidget()
-} timeline: {
-  TIGEntry(
-    date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
-  )
-}
-
-#Preview(as: .systemMedium) {
-  TIGSummaryWidget()
-} timeline: {
-  TIGEntry(
-    date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
-  )
-}
-
-#Preview(as: .accessoryRectangular) {
-  TIGSummaryWidget()
-} timeline: {
-  TIGEntry(
-    date: .now,
-    groupedTimeSlot: TimeSlot.mock.groupedTimeSlots.currentTimeSlot
-  )
 }
