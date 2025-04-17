@@ -12,8 +12,17 @@ struct SummaryLockWidget: View {
   
   var entry: TIGEntry
   
+  var totalTimeString: String {
+    entry.groupedTimeSlot.duration.time(format: .duration_kr)
+  }
+  
   var body: some View {
-    Text("\(entry.date)")
+    VStack(alignment: .leading, spacing: 4) {
+      Text("남은 하루 가용시간")
+        .font(.pretendard(size: 13, weight: .semiBold))
+      Text(totalTimeString)
+        .font(.pretendard(size: 13, weight: .medium))
+    }
   }
 }
 
