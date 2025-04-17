@@ -42,7 +42,7 @@ struct TIGStatusWidgetEntryView : View {
     case .systemSmall:
       StatusSmallWidget(entry: entry)
     case .accessoryRectangular:
-      Text("accessoryRectangular")
+      StatusLockWidget(entry: entry)
     default:
       VStack {}
     }

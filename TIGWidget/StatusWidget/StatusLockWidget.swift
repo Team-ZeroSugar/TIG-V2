@@ -12,8 +12,21 @@ struct StatusLockWidget: View {
   
   var entry: TIGEntry
   
+  var isAvailable: Bool { entry.groupedTimeSlot.isAvailable }
+  var startTimeString: String {
+    entry.groupedTimeSlot.start.time(format: .ampm_kr)
+  }
+  var endTimeString: String {
+    entry.groupedTimeSlot.end.time(format: .ampm_kr)
+  }
+  
   var body: some View {
-    Text("\(entry.date)")
+    VStack(alignment: .leading, spacing: 1) {
+      Text("\(startTimeString) - \(endTimeString)")
+        .font(.pretendard(size: 13, weight: .medium))
+      Text("지금은 \(isAvailable ? "가용" : "비가용")시간이에요")
+        .font(.pretendard(size: 13, weight: .bold))
+    }
   }
 }
 
