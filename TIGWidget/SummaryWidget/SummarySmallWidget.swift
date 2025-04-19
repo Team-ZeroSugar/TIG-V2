@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SummarySmallWidget: View {
   
-  var entry: TIGEntry
+  let entry: TIGEntry
   
   var remainTimeString: String {
     let currentTime = Date().totalSeconds

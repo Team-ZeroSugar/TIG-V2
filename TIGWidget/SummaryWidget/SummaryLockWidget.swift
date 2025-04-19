@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SummaryLockWidget: View {
   
-  var entry: TIGEntry
+  let entry: TIGEntry
   
   var totalTimeString: String {
     entry.currentTimeSlot.duration.time(format: .duration_kr)

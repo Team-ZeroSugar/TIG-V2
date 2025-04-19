@@ -10,7 +10,7 @@ import SwiftUI
 
 struct StatusSmallWidget: View {
   
-  var entry: TIGEntry
+  let entry: TIGEntry
   
   var isAvailable: Bool { entry.currentTimeSlot.isAvailable }
   var startTimeString: String {
