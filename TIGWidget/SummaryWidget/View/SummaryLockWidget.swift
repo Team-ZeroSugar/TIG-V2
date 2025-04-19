@@ -12,6 +12,7 @@ struct SummaryLockWidget: View {
   
   let entry: TIGEntry
   
+  // TODO: 남은 하루 가용시간으로 수정
   var totalTimeString: String {
     entry.currentTimeSlot.duration.time(format: .duration_kr)
   }

@@ -12,6 +12,7 @@ struct SummarySmallWidget: View {
   
   let entry: TIGEntry
   
+  // TODO: 다음 비가용시간 분기처리 필요
   var remainTimeString: String {
     let currentTime = Date().totalSeconds
     let remainTime = entry.currentTimeSlot.end - currentTime
