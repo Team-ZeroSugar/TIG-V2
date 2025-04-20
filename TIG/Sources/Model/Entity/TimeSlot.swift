@@ -46,7 +46,7 @@ extension TimeSlot {
   static let mock: [TimeSlot] = [
     // 00시 ~ 01시
     TimeSlot(start: 0, end: 30 * 60, isAvailable: true),
-    TimeSlot(start: 30 * 60, end: 60 * 60, isAvailable: false),
+    TimeSlot(start: 30 * 60, end: 60 * 60, isAvailable: true),
     // 01시 ~ 02시
     TimeSlot(start: 60 * 60, end: 90 * 60, isAvailable: true),
     TimeSlot(start: 90 * 60, end: 120 * 60, isAvailable: true),
@@ -58,19 +58,19 @@ extension TimeSlot {
     TimeSlot(start: 210 * 60, end: 240 * 60, isAvailable: true),
     // 04시 ~ 05시
     TimeSlot(start: 240 * 60, end: 270 * 60, isAvailable: true),
-    TimeSlot(start: 270 * 60, end: 300 * 60, isAvailable: false),
+    TimeSlot(start: 270 * 60, end: 300 * 60, isAvailable: true),
     // 05시 ~ 06시
-    TimeSlot(start: 300 * 60, end: 330 * 60, isAvailable: false),
-    TimeSlot(start: 330 * 60, end: 360 * 60, isAvailable: false),
+    TimeSlot(start: 300 * 60, end: 330 * 60, isAvailable: true),
+    TimeSlot(start: 330 * 60, end: 360 * 60, isAvailable: true),
     // 06시 ~ 07시
-    TimeSlot(start: 360 * 60, end: 390 * 60, isAvailable: false),
-    TimeSlot(start: 390 * 60, end: 420 * 60, isAvailable: false),
+    TimeSlot(start: 360 * 60, end: 390 * 60, isAvailable: true),
+    TimeSlot(start: 390 * 60, end: 420 * 60, isAvailable: true),
     // 07시 ~ 08시
-    TimeSlot(start: 420 * 60, end: 450 * 60, isAvailable: false),
-    TimeSlot(start: 450 * 60, end: 480 * 60, isAvailable: false),
+    TimeSlot(start: 420 * 60, end: 450 * 60, isAvailable: true),
+    TimeSlot(start: 450 * 60, end: 480 * 60, isAvailable: true),
     // 08시 ~ 09시
-    TimeSlot(start: 480 * 60, end: 510 * 60, isAvailable: false),
-    TimeSlot(start: 510 * 60, end: 540 * 60, isAvailable: false),
+    TimeSlot(start: 480 * 60, end: 510 * 60, isAvailable: true),
+    TimeSlot(start: 510 * 60, end: 540 * 60, isAvailable: true),
     // 09시 ~ 10시
     TimeSlot(start: 540 * 60, end: 570 * 60, isAvailable: true),
     TimeSlot(start: 570 * 60, end: 600 * 60, isAvailable: true),
