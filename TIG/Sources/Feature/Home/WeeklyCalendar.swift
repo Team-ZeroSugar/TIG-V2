@@ -101,7 +101,7 @@ private struct WeekView: View {
     HStack(spacing: 9) {
       ForEach(week) { weekDay in
         Button {
-          homeViewModel.send(.changeDate(weekDay.date))
+          homeViewModel.send(.selectDate(weekDay.date))
         } label: {
           dayView(weekDay.date)
         }

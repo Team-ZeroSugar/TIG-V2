@@ -13,12 +13,9 @@ struct EditTimeView: View {
   @State var timeSlots: [TimeSlot]
   let editTimeViewModel: EditTimeViewModel
   
-  init(editTimeViewModel: EditTimeViewModel) {
-    self.editTimeViewModel = editTimeViewModel
-    self.timeSlots = editTimeViewModel.sharedState.timeSlots
-  init(homeViewModel: HomeViewModel) {
-    self.homeViewModel = homeViewModel
-    self.timeSlots = homeViewModel.state.timeSlots
+  init() {
+    self.editTimeViewModel = EditTimeViewModel()
+    self.timeSlots = editTimeViewModel.state.timeSlots
   }
   
   var body: some View {
@@ -76,5 +73,5 @@ struct EditTimeView: View {
 
 
 #Preview {
-  EditTimeView(editTimeViewModel: EditTimeViewModel())
+  EditTimeView()
 }

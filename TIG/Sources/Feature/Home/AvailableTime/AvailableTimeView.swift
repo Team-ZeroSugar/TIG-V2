@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct AvailableTimeView: View {
-  @State private var editTimeViewModel = EditTimeViewModel()
-  @State private var timerViewModel = TimerViewModel()
-  @State private var isPresented = false
+  @State var isPresented = false
   let homeViewModel: HomeViewModel
   private var isToday: Bool {
     homeViewModel.state.selectedDate.isToday
@@ -21,21 +19,16 @@ struct AvailableTimeView: View {
       if isToday {
         HeaderView(homeViewModel: homeViewModel)
           .padding(.top, 40)
-        TimerView(timerViewModel: timerViewModel)
+        TimerView(homeViewModel: homeViewModel)
           .padding(.top, 34)
       }
-      FooterView(isPresented: $isPresented, timerViewModel: timerViewModel)
+      FooterView(isPresented: $isPresented, homeViewModel: homeViewModel)
         .padding(.top, 36)
     }
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.bottom, 10)
-    .onChange(of: timerViewModel.state.currentTimeInSeconds) {
-      // TODO: 이 방식이 괜찮은지? 좀더 생각해봐야할 듯
-      // 24시가 지나면, selectedDate 변경
-      if $1 == 0 { homeViewModel.send(.changeDate(.now)) }
-    }
     .fullScreenCover(isPresented: $isPresented) {
-      EditTimeView(editTimeViewModel: editTimeViewModel)
+      EditTimeView()
     }
   }
 }
@@ -72,7 +65,7 @@ private struct HeaderView: View {
 
 // TODO: 코드 리팩토링 필요
 private struct TimerView: View {
-  let timerViewModel: TimerViewModel
+  let homeViewModel: HomeViewModel
   
   private var mainTitle: String {
     getMainTitle()
@@ -107,12 +100,6 @@ private struct TimerView: View {
       progressText
     }
     .padding(.horizontal, 41.5)
-    .onAppear {
-      timerViewModel.send(.onAppear)
-    }
-    .onDisappear {
-      timerViewModel.send(.onDisappear)
-    }
   }
   
   private var progressCircle: some View {
@@ -209,7 +196,7 @@ private struct TimerView: View {
 private struct FooterView: View {
   
   @Binding var isPresented: Bool
-  let timerViewModel: TimerViewModel
+  let homeViewModel: HomeViewModel
   
   
   private var remainTime: String {
@@ -283,7 +270,5 @@ private struct FooterView: View {
 }
 
 #Preview {
-  AvailableTimeView(
-    homeViewModel: HomeViewModel()
-  )
+  AvailableTimeView(homeViewModel: HomeViewModel())
 }

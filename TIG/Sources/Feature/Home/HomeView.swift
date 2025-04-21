@@ -48,6 +48,9 @@ struct HomeView: View {
       .onAppear {
         homeViewModel.send(.onAppear)
       }
+      .onDisappear {
+        homeViewModel.send(.onDisappear)
+      }
     }
   }
   
@@ -112,7 +115,7 @@ private struct CalendarPickerView: View {
       .datePickerStyle(.graphical)
       
       Button {
-        homeViewModel.send(.changeDate(.now))
+        homeViewModel.send(.selectDate(.now))
         isPresented = false
       } label: {
         Label(
