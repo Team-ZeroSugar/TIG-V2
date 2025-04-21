@@ -13,7 +13,7 @@ struct TotalTimeView: View {
   
   var body: some View {
     ScrollView {
-      GroupedTimeSlots(groupedTimeSlots: homeViewModel.sharedState.groupedTimeSlots)
+      GroupedTimeSlots(groupedTimeSlots: homeViewModel.state.groupedTimeSlots)
     }
     .padding(.horizontal, 20)
     .scrollIndicators(.hidden)

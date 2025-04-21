@@ -53,7 +53,7 @@ struct HomeView: View {
   
   @ViewBuilder
   private var calendarButton: some View {
-    let currentDate = homeViewModel.sharedState.selectedDate
+    let currentDate = homeViewModel.state.selectedDate
     Button {
       isPresented = true
     } label: {
@@ -104,8 +104,8 @@ private struct CalendarPickerView: View {
       DatePicker(
         "",
         selection: .init(
-          get: { homeViewModel.sharedState.selectedDate },
-          set: { homeViewModel.send(.changeDate($0)) }
+          get: { homeViewModel.state.selectedDate },
+          set: { homeViewModel.send(.selectDate($0)) }
         ),
         displayedComponents: .date
       )
@@ -134,7 +134,7 @@ private struct CalendarPickerView: View {
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.vertical, 24)
     .padding(.horizontal, 16)
-    .onChange(of: homeViewModel.sharedState.selectedDate) { _, _ in
+    .onChange(of: homeViewModel.state.selectedDate) { _, _ in
       isPresented = false
     }
   }

@@ -11,8 +11,22 @@ import Combine
 @Observable
 final class HomeViewModel {
   struct State {
+    var timerCancellable: Cancellable?
+    
+    // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장하는 게 더 나을지 생각 필요
+    var currentTimeInSeconds: Int = Date().totalSeconds
+    
+    var selectedDate: Date = Date().formattedDate
+    
     // 탭바 상태
     var selectedTab: HomeTab = .available
+    
+    // 타임 슬롯 상태
+    var timeSlots: [TimeSlot] = []
+    var groupedTimeSlots: [GroupedTimeSlot] = []
+    var currentTimeSlot: GroupedTimeSlot {
+      self.groupedTimeSlots.currentTimeSlot
+    }
   }
   
   enum Action {
@@ -38,15 +52,54 @@ final class HomeViewModel {
     switch action {
     case .onAppear:
       // TODO: 첫 진입 시에만 호출되도록 수정 필요할 듯
-      initializeTimeSlot(date: sharedState.selectedDate)
+      initializeTimeSlot(date: state.selectedDate)
+      handleTimer()
+    case .onDisappear:
+      stopTimer()
       
-    case .changeDate(let date):
-      sharedState.selectedDate = date.formattedDate
+    case .selectDate(let date):
+      state.selectedDate = date.formattedDate
       initializeTimeSlot(date: date)
       
     case .changeTab(let tab):
       state.selectedTab = tab
+      
+    case .dailyTimeSaveTapped(let timeSlots):
+      updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
     }
+  }
+}
+
+// MARK: - Timer Function
+private extension HomeViewModel {
+  /// 타이머를 조작합니다.
+  /// 현재 선택된 날짜가 오늘 날짜인 경우에만 타이머를 실행하고 그 외 날짜는 타이머 동작을 멈춥니다.
+  func handleTimer() {
+    if state.selectedDate.isToday { startTimer() }
+    else { stopTimer() }
+  }
+  
+  func startTimer() {
+    state.timerCancellable = Timer
+      .publish(every: 1, on: .main, in: .common)
+      .autoconnect()
+      .sink(receiveValue: { [weak self] now in
+        // 현재 시간(초) 업데이트
+        self?.state.currentTimeInSeconds = now.totalSeconds
+        
+        // 현재 선택된 날짜가 타이머 날짜(현재 날짜)와 일치하지 않는 경우 -> 다음날로 넘어가는 시점
+        if self?.state.selectedDate != now.formattedDate {
+          // 타임슬롯 초기화(업데이트)
+          self?.initializeTimeSlot(date: now)
+          
+          // 현재 선택된 날짜 업데이트
+          self?.state.selectedDate = now.formattedDate
+        }
+      })
+  }
+  
+  func stopTimer() {
+    state.timerCancellable?.cancel()
   }
 }
 
@@ -59,7 +112,8 @@ private extension HomeViewModel {
     let result = fetchDailySchedule(date: date)
     switch result {
     case .success(let dailySchedule):
-      sharedState.timeSlots = dailySchedule.timeSlots
+      state.timeSlots = dailySchedule.timeSlots
+      state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
     case .failure:
       break
     }
@@ -127,5 +181,18 @@ private extension HomeViewModel {
     } catch {
       return .failure(error)
     }
+  }
+  
+  /// TimeSlots을 업데이트 합니다.
+  /// - Parameters:
+  ///   - date: 업데이트할 날짜.
+  ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
+  func updateTimeSlot(date: Date, timeSlots: [TimeSlot]) {
+    dailyScheduleRepository.updateDailySchedule(
+      date: state.selectedDate,
+      timeSlots: timeSlots
+    )
+    state.groupedTimeSlots = timeSlots.groupedTimeSlots
+    state.timeSlots = timeSlots
   }
 }
