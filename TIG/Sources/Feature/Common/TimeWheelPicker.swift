@@ -16,6 +16,7 @@ private struct TimeValue {
     self.ampm = timeInSeconds.ampm
     self.hour = timeInSeconds.hour
     self.minute = timeInSeconds.minute
+    print(timeInSeconds.minute)
   }
 }
 
@@ -34,7 +35,7 @@ struct TimeWheelPicker: View {
       Group {
         // 오전, 오후
         Picker("", selection: $timeValue.ampm) {
-          ForEach(0..<2, id: \.self) { int in
+          ForEach([0, 1], id: \.self) { int in
             Text(int == 0 ? "오전" : "오후")
               .font(.pretendard(size: 20, weight: .medium))
           }
@@ -42,15 +43,15 @@ struct TimeWheelPicker: View {
         
         // 시
         Picker("", selection: $timeValue.hour) {
-          ForEach(0..<12, id: \.self) { int in
-            Text("\(int + 1)")
+          ForEach(1..<13, id: \.self) { int in
+            Text("\(int)")
               .font(.pretendard(size: 20, weight: .medium))
           }
         }
         
         // 분
         Picker("", selection: $timeValue.minute) {
-          ForEach(0..<Time.hour / Time.interval, id: \.self) { int in
+          ForEach([0, 30], id: \.self) { int in
             Text(int == 0 ? "00" : "30")
               .font(.pretendard(size: 20, weight: .medium))
           }
@@ -82,5 +83,5 @@ private extension Int {
 
 
 #Preview {
-  TimeWheelPicker(timeInSeconds: Time.hour * 22 + Time.minute * 30)
+  TimeWheelPicker(timeInSeconds: Time.hour * 20 + Time.minute * 30)
 }
