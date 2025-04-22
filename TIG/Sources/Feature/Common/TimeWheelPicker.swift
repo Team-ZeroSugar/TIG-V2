@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct TimeValue {
+private struct TimeValue: Equatable {
   var ampm: Int
   var hour: Int
   var minute: Int
@@ -16,17 +16,19 @@ private struct TimeValue {
     self.ampm = timeInSeconds.ampm
     self.hour = timeInSeconds.hour
     self.minute = timeInSeconds.minute
-    print(timeInSeconds.minute)
   }
 }
 
 struct TimeWheelPicker: View {
-  
+  @Binding var timeInSeconds: Int
   @State private var timeValue: TimeValue
   
-  init(timeInSeconds: Int) {
+  init(timeInSeconds: Binding<Int>) {
+    self._timeInSeconds = timeInSeconds
     self._timeValue = .init(
-      initialValue: TimeValue(timeInSeconds: timeInSeconds)
+      initialValue: TimeValue(
+        timeInSeconds: timeInSeconds.wrappedValue
+      )
     )
   }
   
@@ -60,6 +62,23 @@ struct TimeWheelPicker: View {
       .pickerStyle(.wheel)
       
     }
+    .frame(width: 300)
+    .onChange(of: timeValue, {
+      print(timeValue)
+      self.timeInSeconds = convertToSeconds(from: $1)
+    })
+  }
+  
+  private func convertToSeconds(from timeValue: TimeValue) -> Int {
+    let ampm = timeValue.ampm * Time.hour * 12
+
+    // 12시인 경우는 0시로 계산
+    var hour = timeValue.hour * Time.hour
+    hour = hour % (Time.hour * 12)
+    
+    let minute = timeValue.minute * Time.minute
+  
+    return ampm + hour + minute
   }
 }
 
@@ -83,5 +102,6 @@ private extension Int {
 
 
 #Preview {
-  TimeWheelPicker(timeInSeconds: Time.hour * 20 + Time.minute * 30)
+  @Previewable @State var timeInSeconds: Int = 0
+  TimeWheelPicker(timeInSeconds: $timeInSeconds)
 }
