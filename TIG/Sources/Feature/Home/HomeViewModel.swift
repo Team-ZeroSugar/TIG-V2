@@ -11,19 +11,34 @@ import Combine
 @Observable
 final class HomeViewModel {
   struct State {
+    
+    private let sharedState: SharedState
+    
+    init(sharedState: SharedState) {
+      self.sharedState = sharedState
+    }
+    
     var timerCancellable: Cancellable?
     
     // TODO: CurrentTime 이름으로 초단위가 아닌 Date 타입으로 저장하는 게 더 나을지 생각 필요
     var currentTimeInSeconds: Int = Date().totalSeconds
     
-    var selectedDate: Date = Date().formattedDate
+    var selectedDate: Date {
+      get { sharedState.selectedDate }
+      set { sharedState.selectedDate = newValue }
+    }
     
     // 탭바 상태
     var selectedTab: HomeTab = .available
     
     // 타임 슬롯 상태
-    var timeSlots: [TimeSlot] = []
-    var groupedTimeSlots: [GroupedTimeSlot] = []
+    var timeSlots: [TimeSlot] {
+      get { sharedState.timeSlots }
+      set { sharedState.timeSlots = newValue }
+    }
+    var groupedTimeSlots: [GroupedTimeSlot] {
+      self.timeSlots.groupedTimeSlots
+    }
     var currentTimeSlot: GroupedTimeSlot {
       self.groupedTimeSlots.currentTimeSlot
     }
@@ -38,26 +53,16 @@ final class HomeViewModel {
     
     // 탭바 액션
     case changeTab(HomeTab)
-    
-    // 시간 수정 액션
-    case dailyTimeSaveTapped([TimeSlot])
   }
   
-  private(set) var state: State = .init()
+  private(set) var state: State = .init(
+    sharedState: DIContainer.shared.resolve()
+  )
   
-  private let dailyScheduleRepository: DailyScheduleRepository
-  private let weeklyScheduleRepository: WeeklyScheduleRepository
-  private let appConfigRepository: AppConfigRepository
+  private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
+  private let dailyScheduleRepository: DailyScheduleRepository = DIContainer.shared.resolve()
+  private let weeklyScheduleRepository: WeeklyScheduleRepository = DIContainer.shared.resolve()
   
-  init(
-    dailyScheduleRepository: DailyScheduleRepository = StubDailyScheduleRepository(),
-    weeklyScheduleRepository: WeeklyScheduleRepository = StubWeeklyScheduleRepository(),
-    appconfigRepository: AppConfigRepository = StubAppConfigRepository()
-  ) {
-    self.dailyScheduleRepository = dailyScheduleRepository
-    self.weeklyScheduleRepository = weeklyScheduleRepository
-    self.appConfigRepository = appconfigRepository
-  }
   
   func send(_ action: Action) {
     switch action {
@@ -75,9 +80,6 @@ final class HomeViewModel {
       
     case .changeTab(let tab):
       state.selectedTab = tab
-      
-    case .dailyTimeSaveTapped(let timeSlots):
-      updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
     }
   }
 }
@@ -125,7 +127,6 @@ private extension HomeViewModel {
     switch result {
     case .success(let dailySchedule):
       state.timeSlots = dailySchedule.timeSlots
-      state.groupedTimeSlots = state.timeSlots.groupedTimeSlots
     case .failure:
       break
     }
@@ -193,18 +194,5 @@ private extension HomeViewModel {
     } catch {
       return .failure(error)
     }
-  }
-  
-  /// TimeSlots을 업데이트 합니다.
-  /// - Parameters:
-  ///   - date: 업데이트할 날짜.
-  ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
-  func updateTimeSlot(date: Date, timeSlots: [TimeSlot]) {
-    dailyScheduleRepository.updateDailySchedule(
-      date: state.selectedDate,
-      timeSlots: timeSlots
-    )
-    state.groupedTimeSlots = timeSlots.groupedTimeSlots
-    state.timeSlots = timeSlots
   }
 }

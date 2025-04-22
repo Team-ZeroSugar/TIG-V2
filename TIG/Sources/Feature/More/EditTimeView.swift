@@ -11,11 +11,11 @@ struct EditTimeView: View {
   
   @Environment(\.dismiss) var dismiss
   @State var timeSlots: [TimeSlot]
-  let homeViewModel: HomeViewModel
+  let editTimeViewModel: EditTimeViewModel
   
-  init(homeViewModel: HomeViewModel) {
-    self.homeViewModel = homeViewModel
-    self.timeSlots = homeViewModel.state.timeSlots
+  init() {
+    self.editTimeViewModel = EditTimeViewModel()
+    self.timeSlots = editTimeViewModel.state.timeSlots
   }
   
   var body: some View {
@@ -49,7 +49,7 @@ struct EditTimeView: View {
         
         ToolbarItem(placement: .topBarTrailing) {
           navigationButton(title: "저장") {
-            homeViewModel.send(.dailyTimeSaveTapped(timeSlots))
+            editTimeViewModel.send(.dailyTimeSaveTapped(timeSlots))
             self.dismiss()
           }
         }
@@ -73,5 +73,5 @@ struct EditTimeView: View {
 
 
 #Preview {
-  EditTimeView(homeViewModel: HomeViewModel())
+  EditTimeView()
 }

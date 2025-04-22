@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TotalTimeView: View {
-  
+  @State var isPresented = false
   let homeViewModel: HomeViewModel
   
   var body: some View {
@@ -17,6 +17,12 @@ struct TotalTimeView: View {
     }
     .padding(.horizontal, 20)
     .scrollIndicators(.hidden)
+    .onTapGesture {
+      isPresented = true
+    }
+    .fullScreenCover(isPresented: $isPresented) {
+      EditTimeView()
+    }
   }
 }
 

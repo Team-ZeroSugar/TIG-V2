@@ -28,7 +28,7 @@ struct AvailableTimeView: View {
     .frame(maxHeight: .infinity, alignment: .top)
     .padding(.bottom, 10)
     .fullScreenCover(isPresented: $isPresented) {
-      EditTimeView(homeViewModel: homeViewModel)
+      EditTimeView()
     }
   }
 }
