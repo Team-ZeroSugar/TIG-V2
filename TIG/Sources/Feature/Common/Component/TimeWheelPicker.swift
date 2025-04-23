@@ -13,9 +13,12 @@ private struct TimeValue: Equatable {
   var minute: Int
   
   init(timeInSeconds: Int) {
-    self.ampm = timeInSeconds.ampm
-    self.hour = timeInSeconds.hour
-    self.minute = timeInSeconds.minute
+    self.ampm = timeInSeconds / (Time.hour * 12) == 1 ? 1 : 0
+    
+    let hour = timeInSeconds / Time.hour
+    self.hour = hour % 12 == 0 ? 12 : hour % 12
+    
+    self.minute = timeInSeconds % Time.hour / Time.minute
   }
 }
 
@@ -81,25 +84,6 @@ struct TimeWheelPicker: View {
     return ampm + hour + minute
   }
 }
-
-private extension Int {
-  /// ampm == 0 -> 오전
-  /// ampm == 1 -> 오후
-  var ampm: Int {
-    self / (Time.hour * 12) == 1 ? 1 : 0
-  }
-  
-  /// 12시간 단위
-  var hour: Int {
-    let hour = self / Time.hour
-    return hour % 12 == 0 ? 12 : hour % 12
-  }
-  
-  var minute: Int {
-    self % Time.hour / Time.minute
-  }
-}
-
 
 #Preview {
   @Previewable @State var timeInSeconds: Int = 0
