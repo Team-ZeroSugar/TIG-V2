@@ -25,8 +25,8 @@ protocol WeeklyScheduleRepository {
   
   /// 기존 주간 반복 일정을 업데이트합니다.
   /// - Parameters:
-  ///   - weeklySchedule: 업데이트할 `WeeklySchedule` 객체.
+  ///   - weekDay: 업데이트할 요일 (`WeekDay` 타입).
   ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
-  func updateWeeklySchedule(weeklySchedule: WeeklySchedule, timeSlots: [TimeSlot])
+  func updateWeeklySchedule(weekDay: WeekDay, timeSlots: [TimeSlot])
   
 }

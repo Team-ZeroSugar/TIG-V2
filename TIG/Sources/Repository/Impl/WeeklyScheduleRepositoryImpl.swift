@@ -77,13 +77,12 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
 
   
   func updateWeeklySchedule(
-    weeklySchedule: WeeklySchedule,
+    weekDay: WeekDay,
     timeSlots: [TimeSlot]
   ) {
     print("Impl:", #function)
     
-    let day = weeklySchedule.day.rawValue
-    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == day }
+    let predicate = #Predicate<WeeklyScheduleDTO> { $0.day == weekDay.rawValue }
     let descriptor = FetchDescriptor(predicate: predicate)
     
     do {

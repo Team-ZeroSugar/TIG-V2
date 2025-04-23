@@ -29,11 +29,11 @@ final class StubWeeklyScheduleRepository: WeeklyScheduleRepository {
   }
   
   func updateWeeklySchedule(
-    weeklySchedule: WeeklySchedule,
+    weekDay: WeekDay,
     timeSlots: [TimeSlot]
   ) {
     if let index = weeklySchedules.firstIndex(
-      where: { $0.day == weeklySchedule.day }
+      where: { $0.day == weekDay }
     ) {
       var schedule = weeklySchedules[index]
       schedule.timeSlots = timeSlots
