@@ -32,7 +32,11 @@ final class EditTimeViewModel {
   }
   
   enum Action {
+    // Daily 편집
     case dailyTimeSaveTapped([TimeSlot])
+    
+    // Weekly 편집
+    case onAppearWeeklyRepeat
     case weeklyTimeSaveTapped([WeekDay: [TimeSlot]])
   }
   
@@ -45,8 +49,12 @@ final class EditTimeViewModel {
   
   func send(_ action: Action) {
     switch action {
+    case .onAppearWeeklyRepeat:
+      initializeWeeklyTimeSlots()
+      
     case .dailyTimeSaveTapped(let timeSlots):
       updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
+      
     case .weeklyTimeSaveTapped(let weeklyTimeSlots):
       print(weeklyTimeSlots)
     }
@@ -55,8 +63,16 @@ final class EditTimeViewModel {
 
 // MARK: - Function
 private extension EditTimeViewModel {
+  /// 각 요일에 해당하는 TimeSlot 데이터를 불러와 상태를 초기화합니다.
   func initializeWeeklyTimeSlots() {
-    
+    let result = weeklyScheduleRepository.fetchAllWeeklySchedules()
+    switch result {
+    case .success(let weeklySchedules):
+      weeklySchedules.forEach { state.weeklyTimeSlots[$0.day] = $0.timeSlots }
+    case .failure(let error):
+      print(error)
+      return
+    }
   }
   
   /// TimeSlots을 업데이트 합니다.
