@@ -60,23 +60,27 @@ struct CustomActionSheet<Content: View>: UIViewControllerRepresentable {
     let padding: CGFloat = 12
     
     let separator = UIView()
+    alertController.view.addSubview(separator)
     separator.backgroundColor = .separator
     separator.translatesAutoresizingMaskIntoConstraints = false
-    alertController.view.addSubview(separator)
     
-    separator.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor).isActive = true
-    separator.trailingAnchor.constraint(equalTo: alertController.view.trailingAnchor).isActive = true
-    separator.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -(actionButtonHeight * 2 + toCancelGap)).isActive = true
-    separator.heightAnchor.constraint(equalToConstant: 0.33).isActive = true
-    
+    NSLayoutConstraint.activate([
+      separator.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor),
+      separator.trailingAnchor.constraint(equalTo: alertController.view.trailingAnchor),
+      separator.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -(actionButtonHeight * 2 + toCancelGap)),
+      separator.heightAnchor.constraint(equalToConstant: 0.33)
+    ])
     
     alertController.view.addSubview(contentUIView)
     contentUIView.backgroundColor = .clear
     contentUIView.translatesAutoresizingMaskIntoConstraints = false
-    contentUIView.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: padding).isActive = true
-    contentUIView.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor, constant: padding).isActive = true
-    contentUIView.trailingAnchor.constraint(equalTo: alertController.view.trailingAnchor, constant: -padding).isActive = true
-    contentUIView.bottomAnchor.constraint(equalTo: separator.topAnchor, constant: -padding).isActive = true
+    
+    NSLayoutConstraint.activate([
+      contentUIView.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: padding),
+      contentUIView.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor, constant: padding),
+      contentUIView.trailingAnchor.constraint(equalTo: alertController.view.trailingAnchor, constant: -padding),
+      contentUIView.bottomAnchor.constraint(equalTo: separator.topAnchor, constant: -padding)
+    ])
     
     uiViewController.present(alertController, animated: true)
   }
