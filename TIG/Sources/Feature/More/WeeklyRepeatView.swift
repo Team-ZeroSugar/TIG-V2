@@ -8,29 +8,28 @@
 import SwiftUI
 
 struct WeeklyRepeatView: View {
+  
+  @State var editTimeViewModel = EditTimeViewModel()
   @State var selectedDay: WeekDay = .sun
   @State var isEditMode = false
-  @State var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [
-    .sun: TimeSlot.mock,
-    .mon: TimeSlot.mock,
-    .tue: TimeSlot.mock,
-    .wed: TimeSlot.mock,
-    .thu: TimeSlot.mock,
-    .fri: TimeSlot.mock,
-    .sat: TimeSlot.mock,
-  ]
-  
-  let editTimeViewModel = EditTimeViewModel()
   
   var body: some View {
     VStack(spacing: 0) {
-      WeeklyHeader(selectedDay: $selectedDay)
-      
-      DayPageView(
-        selectedDay: $selectedDay,
-        isEditMode: $isEditMode,
-        weeklyTimeSlots: $weeklyTimeSlots
-      )
+      if editTimeViewModel.state.weeklyTimeSlots.isEmpty {
+        Button {
+          editTimeViewModel.send(.settingButtonTapped)
+        } label: {
+          Text("초기화")
+        }
+      } else {
+        WeeklyHeader(selectedDay: $selectedDay)
+        
+        DayPageView(
+          selectedDay: $selectedDay,
+          isEditMode: $isEditMode,
+          editTimeViewModel: editTimeViewModel
+        )
+      }
     }
     .background(.backgroundAlternative)
     .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
@@ -40,6 +39,9 @@ struct WeeklyRepeatView: View {
         editButton()
       }
     }
+    .onAppear {
+      editTimeViewModel.send(.onAppearWeeklyRepeat)
+    }
   }
   
   // MARK: (F)EditButton
@@ -47,7 +49,7 @@ struct WeeklyRepeatView: View {
   private func editButton() -> some View {
     Button {
       if isEditMode {
-        editTimeViewModel.send(.weeklyTimeSaveTapped(weeklyTimeSlots))
+        editTimeViewModel.send(.weeklyTimeSaveTapped)
       }
       isEditMode.toggle()
     } label: {
@@ -101,8 +103,8 @@ private struct DayPageView: View {
   
   @Binding var selectedDay: WeekDay
   @Binding var isEditMode: Bool
-  @Binding var weeklyTimeSlots: [WeekDay: [TimeSlot]]
   
+  let editTimeViewModel: EditTimeViewModel
   
   var body: some View {
     TabView(selection: $selectedDay) {
@@ -117,11 +119,11 @@ private struct DayPageView: View {
     .tabViewStyle(.page(indexDisplayMode: .never))
   }
   
-  // 요일에 해당하는 타임 슬롯 배열을 바인딩으로 반환해주는 함수
+  // state.weeklyTimeSlots <-> @Binding timeSlots을 해주는 함수
   private func binding(for key: WeekDay) -> Binding<[TimeSlot]> {
     return Binding(
-      get: { return self.weeklyTimeSlots[key] ?? [] },
-      set: { self.weeklyTimeSlots[key] = $0 }
+      get: { return editTimeViewModel.state.weeklyTimeSlots[key] ?? [] },
+      set: { editTimeViewModel.send(.onChangeWeeklyTimeSlot(key, $0)) }
     )
   }
 }
