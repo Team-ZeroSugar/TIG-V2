@@ -11,7 +11,8 @@ protocol WeeklyScheduleRepository {
   
   /// 주간 반복 일정을 초기화하고 기본값을 설정합니다.
   /// 앱에서 사용할 수 있도록 초기 `WeeklySchedule` 데이터를 생성합니다.
-  func initializeWeeklySchedules()
+  /// - Parameter timeSlots: 기본값에 적용할 `TimeSlot` 배열.
+  func initializeWeeklySchedules(timeSlots: [TimeSlot])
   
   /// 저장된 모든 주간 반복 일정을 가져옵니다.
   /// - Returns: 저장된 모든 `WeeklySchedule`

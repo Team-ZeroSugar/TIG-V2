@@ -17,7 +17,7 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
   }
   
   
-  func initializeWeeklySchedules() {
+  func initializeWeeklySchedules(timeSlots: [TimeSlot]) {
     print("Impl:", #function)
     
     let descriptor = FetchDescriptor<WeeklyScheduleDTO>()
@@ -32,7 +32,10 @@ final class WeeklyScheduleRepositoryImpl: WeeklyScheduleRepository {
       }
       
       WeekDay.allCases.forEach {
-        let model = WeeklyScheduleDTO(day: $0.rawValue, timeSlots: [])
+        let model = WeeklyScheduleDTO(
+          day: $0.rawValue,
+          timeSlots: timeSlots.map { TimeSlotDTO($0) }
+        )
         modelContext.insert(model)
       }
       

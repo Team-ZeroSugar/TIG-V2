@@ -10,9 +10,9 @@ import Foundation
 final class StubWeeklyScheduleRepository: WeeklyScheduleRepository {
   private var weeklySchedules: [WeeklySchedule] = []
   
-  func initializeWeeklySchedules() {
+  func initializeWeeklySchedules(timeSlots: [TimeSlot]) {
     WeekDay.allCases.forEach { day in
-      let schedule = WeeklySchedule(day: day, timeSlots: [])
+      let schedule = WeeklySchedule(day: day, timeSlots: timeSlots)
       weeklySchedules.append(schedule)
     }
   }
