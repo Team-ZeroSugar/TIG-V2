@@ -175,10 +175,23 @@ private extension HomeViewModel {
       let bed = try appConfigRepository.fetchBedTime().get()
       
       let timeSlots = stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
-        TimeSlot(
+        let isAvailable: Bool
+        
+        // (하루 기준) 기상시간이 수면시간보다 빠를 때
+        // Ex) 기상 10시 - 취침 22시
+        if wakeup <= bed {
+          isAvailable = wakeup <= $0 && $0 < bed
+        
+        // (하루 기준) 기상시간이 수면시간보다 느릴 때
+        // Ex) 기상 22시 - 취침 10시
+        } else {
+          isAvailable = wakeup <= $0 || $0 < bed
+        }
+        
+        return TimeSlot(
           start: $0,
           end: $0 + Time.interval,
-          isAvailable: wakeup <= $0 && $0 < bed
+          isAvailable: isAvailable
         )
       }
       
