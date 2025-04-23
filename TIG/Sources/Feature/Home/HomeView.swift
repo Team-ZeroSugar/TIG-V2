@@ -78,7 +78,7 @@ struct HomeView: View {
   private var menuButton: some View {
     Menu {
       NavigationLink {
-        WeeklyRepeatView(homeViewModel: homeViewModel)
+        WeeklyRepeatView()
       } label: {
         Label(
           "반복 관리",

@@ -10,28 +10,50 @@ import SwiftUI
 struct WeeklyRepeatView: View {
   @State var selectedDay: WeekDay = .sun
   @State var isEditMode = false
+  @State var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [
+    .sun: TimeSlot.mock,
+    .mon: TimeSlot.mock,
+    .tue: TimeSlot.mock,
+    .wed: TimeSlot.mock,
+    .thu: TimeSlot.mock,
+    .fri: TimeSlot.mock,
+    .sat: TimeSlot.mock,
+  ]
   
-  let homeViewModel: HomeViewModel
+  let editTimeViewModel = EditTimeViewModel()
   
   var body: some View {
     VStack(spacing: 0) {
       WeeklyHeader(selectedDay: $selectedDay)
       
-      DayPageView(selectedDay: $selectedDay, isEditMode: $isEditMode)
+      DayPageView(
+        selectedDay: $selectedDay,
+        isEditMode: $isEditMode,
+        weeklyTimeSlots: $weeklyTimeSlots
+      )
     }
     .background(.backgroundAlternative)
     .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button {
-          isEditMode.toggle()
-        } label: {
-          Text(isEditMode ? "저장" : "수정")
-            .foregroundStyle(.primaryNormal)
-            .font(.pretendard(size: 16, weight: .medium))
-        }
+        editButton()
       }
+    }
+  }
+  
+  // MARK: (F)EditButton
+  @ViewBuilder
+  private func editButton() -> some View {
+    Button {
+      if isEditMode {
+        editTimeViewModel.send(.weeklyTimeSaveTapped(weeklyTimeSlots))
+      }
+      isEditMode.toggle()
+    } label: {
+      Text(isEditMode ? "저장" : "수정")
+        .foregroundStyle(.primaryNormal)
+        .font(.pretendard(size: 16, weight: .medium))
     }
   }
 }
@@ -79,15 +101,8 @@ private struct DayPageView: View {
   
   @Binding var selectedDay: WeekDay
   @Binding var isEditMode: Bool
-  @State var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [
-    .sun: TimeSlot.mock,
-    .mon: TimeSlot.mock,
-    .tue: TimeSlot.mock,
-    .wed: TimeSlot.mock,
-    .thu: TimeSlot.mock,
-    .fri: TimeSlot.mock,
-    .sat: TimeSlot.mock,
-  ]
+  @Binding var weeklyTimeSlots: [WeekDay: [TimeSlot]]
+  
   
   var body: some View {
     TabView(selection: $selectedDay) {
@@ -138,6 +153,6 @@ private struct TimeSlotsView: View {
 
 #Preview {
   NavigationStack {
-    WeeklyRepeatView(homeViewModel: HomeViewModel())
+    WeeklyRepeatView()
   }
 }

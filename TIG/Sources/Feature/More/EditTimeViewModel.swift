@@ -27,11 +27,13 @@ final class EditTimeViewModel {
       get { sharedState.timeSlots }
       set { sharedState.timeSlots = newValue }
     }
-
+    
+    var weeklyTimeSlots: [WeekDay: [TimeSlot]] = [:]
   }
   
   enum Action {
     case dailyTimeSaveTapped([TimeSlot])
+    case weeklyTimeSaveTapped([WeekDay: [TimeSlot]])
   }
   
   private(set) var state: State = .init(
@@ -39,17 +41,24 @@ final class EditTimeViewModel {
   )
   
   private let dailyScheduleRepository: DailyScheduleRepository = DIContainer.shared.resolve()
+  private let weeklyScheduleRepository: WeeklyScheduleRepository = DIContainer.shared.resolve()
   
   func send(_ action: Action) {
     switch action {
     case .dailyTimeSaveTapped(let timeSlots):
       updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
+    case .weeklyTimeSaveTapped(let weeklyTimeSlots):
+      print(weeklyTimeSlots)
     }
   }
 }
 
 // MARK: - Function
 private extension EditTimeViewModel {
+  func initializeWeeklyTimeSlots() {
+    
+  }
+  
   /// TimeSlots을 업데이트 합니다.
   /// - Parameters:
   ///   - date: 업데이트할 날짜.
@@ -60,7 +69,7 @@ private extension EditTimeViewModel {
       if let dailySchedule {
         // 1. 기존에 데이터가 있을 경우, Update
         dailyScheduleRepository.updateDailySchedule(
-          date: date, timeSlots: timeSlots
+          date: dailySchedule.date, timeSlots: timeSlots
         )
       } else {
         // 2. 없을 경우, Create
@@ -72,6 +81,5 @@ private extension EditTimeViewModel {
     case .failure:
       return
     }
-    
   }
 }
