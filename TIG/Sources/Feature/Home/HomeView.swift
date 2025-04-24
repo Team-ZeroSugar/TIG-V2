@@ -27,7 +27,7 @@ struct HomeView: View {
           ))
       }
       .ignoresSafeArea(.all, edges: .bottom)
-      .background(.blueBg)
+      .background(.backgroundAlternative)
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
           calendarButton
@@ -63,14 +63,13 @@ struct HomeView: View {
       HStack {
         Text(currentDate.string(format: .yearMonth_kr))
           .font(.pretendard(size: 16, weight: .semiBold))
-          .foregroundStyle(.gray06)
         
         Image(systemName: "chevron.down")
           .resizable()
           .aspectRatio(contentMode: .fit)
-          .frame(width: 15, height: 15)
-          .foregroundColor(.gray06)
+          .frame(width: 12, height: 12)
       }
+      .foregroundColor(.contentStrong)
     }
   }
   
@@ -93,7 +92,7 @@ struct HomeView: View {
       }
     } label: {
       Image(systemName: "ellipsis")
-        .foregroundStyle(.gray06)
+        .foregroundStyle(.contentNormal)
     }
   }
 }
@@ -124,6 +123,7 @@ private struct CalendarPickerView: View {
         )
         // TODO: 디자이너한테 전달
         .font(.pretendard(size: 14, weight: .regular))
+        .foregroundStyle(.primaryNormal)
       }
       // TODO: 디자이너한테 전달
       .padding(.vertical, 6)
@@ -131,7 +131,7 @@ private struct CalendarPickerView: View {
       .overlay {
         RoundedRectangle(cornerRadius: 40)
           .stroke(lineWidth: 1)
-          .fill(.blueMain)
+          .fill(.primaryNormal)
       }
     }
     .frame(maxHeight: .infinity, alignment: .top)

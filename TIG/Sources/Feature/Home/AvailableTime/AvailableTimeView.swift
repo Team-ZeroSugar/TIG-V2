@@ -49,16 +49,16 @@ private struct HeaderView: View {
     VStack(spacing: 8) {
       Text("\(startTime) - \(endTime)")
         .font(.pretendard(size: 16, weight: .medium))
-        .foregroundStyle(.gray04)
+        .foregroundStyle(.contentAlternative)
       
       HStack(spacing: 0) {
         Text("지금은 ")
         Text(isAvailable ? "가용시간" : "비가용시간")
-          .foregroundStyle(isAvailable ? .blueMain : .gray05)
+          .foregroundStyle(isAvailable ? .primaryNormal : .contentNormal)
         Text("이에요")
       }
       .font(.pretendard(size: 20, weight: .semiBold))
-      .foregroundStyle(.gray05)
+      .foregroundStyle(.contentNormal)
     }
   }
 }
@@ -106,7 +106,7 @@ private struct TimerView: View {
     ZStack {
       Circle()
         .fill(Color.clear)
-        .overlay(Circle().stroke(.gray02, lineWidth: 10))
+        .overlay(Circle().stroke(.primaryInactive, lineWidth: 10))
       
       Circle()
         .trim(from: progressPercent, to: 1)
@@ -116,7 +116,7 @@ private struct TimerView: View {
             lineJoin: .round
         ))
         .rotationEffect(.degrees(-90))
-        .foregroundStyle(.blueMain)
+        .foregroundStyle(.primaryNormal)
     }
   }
   
@@ -124,19 +124,19 @@ private struct TimerView: View {
     VStack(spacing: 17) {
       Text(isAvailable ? "남은 가용시간" : "다음 가용시간")
         .font(.pretendard(size: 12, weight: .medium))
-        .foregroundStyle(.gray01)
+        .foregroundStyle(.exceptionNormal)
         .padding(.vertical, 6)
         .padding(.horizontal, 12.5)
-        .background(isAvailable ? .blueMain : .gray02)
+        .background(isAvailable ? .primaryNormal : .primaryInactive)
         .clipShape(Capsule())
       
       Text(mainTitle)
         .font(.pretendard(size: 36, weight: .semiBold))
-        .foregroundStyle(isAvailable ? .blueMain : .gray02)
+        .foregroundStyle(isAvailable ? .primaryNormal : .primaryInactive)
       
       Text("\(subTitle)")
         .font(.pretendard(size: 16, weight: .medium))
-        .foregroundStyle(isAvailable ? .gray06 : .gray02)
+        .foregroundStyle(isAvailable ? .contentNormal : .primaryInactive)
         // 중간 텍스트를 중앙에 배치하기 위해 spacing을 동일하게 주고 offset으로 위치 이동
         .offset(y: -11)
     }
@@ -236,7 +236,7 @@ private struct FooterView: View {
         }
         .font(.pretendard(size: 16, weight: .semiBold))
       }
-      .foregroundStyle(.gray04)
+      .foregroundStyle(.contentNeutral)
       
       Spacer()
       
@@ -245,12 +245,12 @@ private struct FooterView: View {
           isPresented = true
         } label: {
           Text("시간 수정")
-            .foregroundStyle(.blueMain)
+            .foregroundStyle(.exceptionPrimary)
             .font(.pretendard(size: 14, weight: .medium))
         }
         .padding(.vertical, 10)
         .padding(.horizontal, 18)
-        .background(.blueButton)
+        .background(.primaryAlternative)
         .clipShape(RoundedRectangle(cornerRadius: 8))
       }
     }
@@ -259,7 +259,7 @@ private struct FooterView: View {
     .overlay {
       RoundedRectangle(cornerRadius: 12)
         .stroke(lineWidth: 1)
-        .fill(.blueStroke)
+        .fill(.borderPrimary)
     }
     .padding(.horizontal, 20)
   }
