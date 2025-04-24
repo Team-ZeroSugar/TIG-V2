@@ -35,6 +35,7 @@ struct WeeklyRepeatView: View {
     .background(isInitial ? .backgroundNormal : .backgroundAlternative)
     .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
     .navigationBarTitleDisplayMode(.inline)
+    .animation(.easeInOut(duration: 0.3), value: isInitial)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         editButton()
