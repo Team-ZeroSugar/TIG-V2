@@ -13,25 +13,26 @@ struct WeeklyRepeatView: View {
   @State var selectedDay: WeekDay = .sun
   @State var isEditMode = false
   
+  private var isInitial: Bool {
+    editTimeViewModel.state.weeklyTimeSlots.isEmpty
+  }
+  
   var body: some View {
     VStack(spacing: 0) {
-      if editTimeViewModel.state.weeklyTimeSlots.isEmpty {
-        Button {
-          editTimeViewModel.send(.settingButtonTapped)
-        } label: {
-          Text("초기화")
-        }
+      if isInitial {
+        WeeklyRepeatAnnounceView(editTimeViewModel: editTimeViewModel)
       } else {
-        WeeklyHeader(selectedDay: $selectedDay)
         
+        WeeklyHeader(selectedDay: $selectedDay)
         DayPageView(
           selectedDay: $selectedDay,
           isEditMode: $isEditMode,
           editTimeViewModel: editTimeViewModel
         )
+        
       }
     }
-    .background(.backgroundAlternative)
+    .background(isInitial ? .backgroundNormal : .backgroundAlternative)
     .navigationTitle(isEditMode ? "반복 일정 수정" : "반복 일정 관리")
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
@@ -54,9 +55,10 @@ struct WeeklyRepeatView: View {
       isEditMode.toggle()
     } label: {
       Text(isEditMode ? "저장" : "수정")
-        .foregroundStyle(.primaryNormal)
+        .foregroundStyle(isInitial ? .clear : .primaryNormal)
         .font(.pretendard(size: 16, weight: .medium))
     }
+    .disabled(isInitial)
   }
 }
 
