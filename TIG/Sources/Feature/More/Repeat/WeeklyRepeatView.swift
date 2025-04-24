@@ -9,9 +9,9 @@ import SwiftUI
 
 struct WeeklyRepeatView: View {
   
-  @State var editTimeViewModel = EditTimeViewModel()
-  @State var selectedDay: WeekDay = .sun
-  @State var isEditMode = false
+  @State private var editTimeViewModel = EditTimeViewModel()
+  @State private var selectedDay: WeekDay = .sun
+  @State private var isEditMode = false
   
   private var isInitial: Bool {
     editTimeViewModel.state.weeklyTimeSlots.isEmpty
