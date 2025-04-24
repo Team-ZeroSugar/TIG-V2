@@ -80,14 +80,7 @@ private extension EditTimeViewModel {
     do {
       let wakeup = try appConfigRepository.fetchWakeupTime().get()
       let bed = try appConfigRepository.fetchBedTime().get()
-      
-      let timeSlots = stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
-        TimeSlot(
-          start: $0,
-          end: $0 + Time.interval,
-          isAvailable: wakeup <= $0 && $0 < bed
-        )
-      }
+      let timeSlots = TimeSlot.generate(wakeup: wakeup, bed: bed)
       
       weeklyScheduleRepository.initializeWeeklySchedules(timeSlots: timeSlots)
       WeekDay.allCases.forEach { state.weeklyTimeSlots[$0] = timeSlots }
