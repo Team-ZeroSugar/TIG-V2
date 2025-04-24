@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimeSlot: Equatable, Identifiable {
+struct TimeSlot: Identifiable, Equatable {
   var id: String = UUID().uuidString
   var start: Int
   var end: Int
@@ -20,28 +20,27 @@ struct TimeSlot: Equatable, Identifiable {
   }
 }
 
-struct GroupedTimeSlot: Hashable {
-  var start: Int
-  var end: Int
-  var isAvailable: Bool
-  var duration: Int
-  var count: Int
-}
-
-extension Array where Element == GroupedTimeSlot {
-  /// 배열에서 현재 시간대에 위치한 TimeSlot 객체를 반환합니다. (빈 배열인 경우 mock 반환)
-  var currentTimeSlot: GroupedTimeSlot {
-    let now = Date()
-    let totalSeconds = now.totalSeconds
-    
-    return self.first(where: {
-      $0.start <= totalSeconds && $0.end > totalSeconds
-    }) ?? .mock
+extension TimeSlot {
+  static func generate(wakeup: Int, bed: Int) -> [TimeSlot] {
+    return stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
+      let isAvailable: Bool
+      
+      if wakeup <= bed {
+        isAvailable = wakeup <= $0 && $0 < bed
+      } else {
+        isAvailable = wakeup <= $0 || $0 < bed
+      }
+      
+      return TimeSlot(
+        start: $0,
+        end: $0 + Time.interval,
+        isAvailable: isAvailable
+      )
+    }
   }
 }
 
 // MARK: - Mock Data
-
 extension TimeSlot {
   static let mock: [TimeSlot] = [
     // 00시 ~ 01시
@@ -119,12 +118,4 @@ extension TimeSlot {
   ]
 }
 
-extension GroupedTimeSlot {
-  static let mock = GroupedTimeSlot(
-    start: 0,
-    end: 0,
-    isAvailable: false,
-    duration: 0,
-    count: 0
-  )
-}
+
