@@ -103,10 +103,29 @@ private extension EditTimeViewModel {
   
   /// WeeklyTimeSlots을 업데이트 합니다.
   func updateWeeklyTimeSlots() {
-    state.weeklyTimeSlots.forEach {
+    // 1. WeeklySchedule 업데이트
+    state.weeklyTimeSlots.forEach { weekDay, timeSlots in
       weeklyScheduleRepository.updateWeeklySchedule(
-        weekDay: $0.key, timeSlots: $0.value
+        weekDay: weekDay, timeSlots: timeSlots
       )
+      
+      // 2. timeSlots이 요일에 해당된다면 업데이트
+      if state.selectedDate.weekday - 1 == weekDay.rawValue {
+        state.timeSlots = timeSlots
+      }
+      
+      do {
+        // 3. 오늘 이후에 해당되는 dailySchedule만 업데이트
+        let dailySchedules = try dailyScheduleRepository.fetchAllDailySchedules().get()
+        dailySchedules
+          .filter { $0.date >= .now.formattedDate }
+          .forEach {
+            updateDailyTimeSlot(date: $0.date, timeSlots: timeSlots)
+          }
+        
+      } catch {
+        print(error)
+      }
     }
   }
   
