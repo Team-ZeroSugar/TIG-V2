@@ -9,25 +9,25 @@ import SwiftUI
 
 struct WeeklyRepeatView: View {
   
-  @State private var editTimeViewModel = EditTimeViewModel()
+  @State private var weeklyRepeatViewModel = WeeklyRepeatViewModel()
   @State private var selectedDay: WeekDay = .sun
   @State private var isEditMode = false
   
   private var isInitial: Bool {
-    editTimeViewModel.state.weeklyTimeSlots.isEmpty
+    weeklyRepeatViewModel.state.weeklyTimeSlots.isEmpty
   }
   
   var body: some View {
     VStack(spacing: 0) {
       if isInitial {
-        WeeklyRepeatAnnounceView(editTimeViewModel: editTimeViewModel)
+        WeeklyRepeatAnnounceView(weeklyRepeatViewModel: weeklyRepeatViewModel)
       } else {
         
         WeeklyHeader(selectedDay: $selectedDay)
         DayPageView(
           selectedDay: $selectedDay,
           isEditMode: $isEditMode,
-          editTimeViewModel: editTimeViewModel
+          weeklyRepeatViewModel: weeklyRepeatViewModel
         )
         
       }
@@ -42,7 +42,7 @@ struct WeeklyRepeatView: View {
       }
     }
     .onAppear {
-      editTimeViewModel.send(.onAppearWeeklyRepeat)
+      weeklyRepeatViewModel.send(.onAppear)
     }
   }
   
@@ -51,7 +51,7 @@ struct WeeklyRepeatView: View {
   private func editButton() -> some View {
     Button {
       if isEditMode {
-        editTimeViewModel.send(.weeklyTimeSaveTapped)
+        weeklyRepeatViewModel.send(.weeklyTimeSaveTapped)
       }
       isEditMode.toggle()
     } label: {
@@ -107,7 +107,7 @@ private struct DayPageView: View {
   @Binding var selectedDay: WeekDay
   @Binding var isEditMode: Bool
   
-  let editTimeViewModel: EditTimeViewModel
+  let weeklyRepeatViewModel: WeeklyRepeatViewModel
   
   var body: some View {
     TabView(selection: $selectedDay) {
@@ -125,8 +125,8 @@ private struct DayPageView: View {
   // state.weeklyTimeSlots <-> @Binding timeSlots을 해주는 함수
   private func binding(for key: WeekDay) -> Binding<[TimeSlot]> {
     return Binding(
-      get: { return editTimeViewModel.state.weeklyTimeSlots[key] ?? [] },
-      set: { editTimeViewModel.send(.onChangeWeeklyTimeSlot(key, $0)) }
+      get: { return weeklyRepeatViewModel.state.weeklyTimeSlots[key] ?? [] },
+      set: { weeklyRepeatViewModel.send(.onChangeWeeklyTimeSlot(key, $0)) }
     )
   }
 }
