@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct WeeklyRepeatAnnounceView: View {
+  
+  let weeklyRepeatViewModel: WeeklyRepeatViewModel
+  
   var body: some View {
     VStack(alignment: .center, spacing: 0) {
       
@@ -27,8 +30,7 @@ struct WeeklyRepeatAnnounceView: View {
         .padding(.top, 12)
       
       Button(action: {
-        print("Tap")
-        
+        weeklyRepeatViewModel.send(.settingButtonTapped)
       }, label: {
         Text("설정하기")
           .font(.pretendard(size: 15, weight: .regular))
@@ -44,5 +46,5 @@ struct WeeklyRepeatAnnounceView: View {
 }
 
 #Preview {
-  WeeklyRepeatAnnounceView()
+  WeeklyRepeatAnnounceView(weeklyRepeatViewModel: WeeklyRepeatViewModel())
 }

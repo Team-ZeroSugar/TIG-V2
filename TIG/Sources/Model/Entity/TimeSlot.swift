@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimeSlot: Equatable, Identifiable {
+struct TimeSlot: Identifiable, Equatable {
   var id: String = UUID().uuidString
   var start: Int
   var end: Int
@@ -20,28 +20,69 @@ struct TimeSlot: Equatable, Identifiable {
   }
 }
 
-struct GroupedTimeSlot: Hashable {
-  var start: Int
-  var end: Int
-  var isAvailable: Bool
-  var duration: Int
-  var count: Int
+extension TimeSlot {
+  static func generate(wakeup: Int, bed: Int) -> [TimeSlot] {
+    return stride(from: 0, to: Time.hour * 24, by: Time.interval).map {
+      let isAvailable: Bool
+      
+      if wakeup <= bed {
+        isAvailable = wakeup <= $0 && $0 < bed
+      } else {
+        isAvailable = wakeup <= $0 || $0 < bed
+      }
+      
+      return TimeSlot(
+        start: $0,
+        end: $0 + Time.interval,
+        isAvailable: isAvailable
+      )
+    }
+  }
 }
 
-extension Array where Element == GroupedTimeSlot {
-  /// 배열에서 현재 시간대에 위치한 TimeSlot 객체를 반환합니다. (빈 배열인 경우 mock 반환)
-  var currentTimeSlot: GroupedTimeSlot {
-    let now = Date()
-    let totalSeconds = now.totalSeconds
+extension Array where Element == TimeSlot {
+  var groupedTimeSlots: [GroupedTimeSlot] {
+    var result: [GroupedTimeSlot] = []
     
-    return self.first(where: {
-      $0.start <= totalSeconds && $0.end > totalSeconds
-    }) ?? .mock
+    if self.isEmpty { return result }
+    
+    var currentIsAvailable = self[0].isAvailable
+    var currentCount = 1
+    var currentStart = self[0].start
+    var currentEnd = self[0].end
+    
+    for index in 1..<self.count {
+      if self[index].isAvailable == currentIsAvailable {
+        currentCount += 1
+        currentEnd = self[index].end
+      } else {
+        result.append(GroupedTimeSlot(
+          start: currentStart,
+          end: currentEnd,
+          isAvailable: currentIsAvailable,
+          duration: currentEnd - currentStart,
+          count: currentCount
+        ))
+        currentIsAvailable = self[index].isAvailable
+        currentCount = 1
+        currentStart = self[index].start
+        currentEnd = self[index].end
+      }
+    }
+    
+    result.append(GroupedTimeSlot(
+      start: currentStart,
+      end: currentEnd,
+      isAvailable: currentIsAvailable,
+      duration: currentEnd - currentStart,
+      count: currentCount
+    ))
+    
+    return result
   }
 }
 
 // MARK: - Mock Data
-
 extension TimeSlot {
   static let mock: [TimeSlot] = [
     // 00시 ~ 01시
@@ -119,12 +160,4 @@ extension TimeSlot {
   ]
 }
 
-extension GroupedTimeSlot {
-  static let mock = GroupedTimeSlot(
-    start: 0,
-    end: 0,
-    isAvailable: false,
-    duration: 0,
-    count: 0
-  )
-}
+

@@ -27,7 +27,6 @@ final class EditTimeViewModel {
       get { sharedState.timeSlots }
       set { sharedState.timeSlots = newValue }
     }
-
   }
   
   enum Action {
@@ -43,24 +42,24 @@ final class EditTimeViewModel {
   func send(_ action: Action) {
     switch action {
     case .dailyTimeSaveTapped(let timeSlots):
-      updateTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
+      updateDailyTimeSlot(date: state.selectedDate, timeSlots: timeSlots)
     }
   }
 }
 
 // MARK: - Function
 private extension EditTimeViewModel {
-  /// TimeSlots을 업데이트 합니다.
+  /// DailyTimeSlots을 업데이트 합니다.
   /// - Parameters:
   ///   - date: 업데이트할 날짜.
   ///   - timeSlots: 해당 일정에 적용할 `TimeSlot` 배열.
-  func updateTimeSlot(date: Date, timeSlots: [TimeSlot]) {
+  func updateDailyTimeSlot(date: Date, timeSlots: [TimeSlot]) {
     switch dailyScheduleRepository.fetchDailySchedule(date: date) {
     case .success(let dailySchedule):
       if let dailySchedule {
         // 1. 기존에 데이터가 있을 경우, Update
         dailyScheduleRepository.updateDailySchedule(
-          date: date, timeSlots: timeSlots
+          date: dailySchedule.date, timeSlots: timeSlots
         )
       } else {
         // 2. 없을 경우, Create
@@ -69,9 +68,8 @@ private extension EditTimeViewModel {
         )
       }
       state.timeSlots = timeSlots
-    case .failure:
-      return
+    case .failure(let error):
+      print(error)
     }
-    
   }
 }

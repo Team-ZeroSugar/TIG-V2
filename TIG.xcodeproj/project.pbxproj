@@ -75,9 +75,9 @@
 				"Resources/Font/Pretendard-Medium.otf",
 				"Resources/Font/Pretendard-SemiBold.otf",
 				Sources/DesignSystem/Font.swift,
+				Sources/Model/Entity/GroupedTimeSlot.swift,
 				Sources/Model/Entity/TimeSlot.swift,
 				Sources/Utility/Constant/Time.swift,
-				"Sources/Utility/Extension/Array+Ext.swift",
 				"Sources/Utility/Extension/Date+Ext.swift",
 				"Sources/Utility/Extension/Int+Ext.swift",
 			);
