@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct TotalTimeView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+  @State var isPresented = false
+  let homeViewModel: HomeViewModel
+  
+  var body: some View {
+    ScrollView {
+      GroupedTimeSlots(groupedTimeSlots: homeViewModel.state.groupedTimeSlots)
     }
+    .padding(.horizontal, 20)
+    .scrollIndicators(.hidden)
+    .onTapGesture {
+      isPresented = true
+    }
+    .fullScreenCover(isPresented: $isPresented) {
+      EditTimeView()
+    }
+  }
 }
 
 #Preview {
-    TotalTimeView()
+  let homeViewModel = HomeViewModel()
+  
+  TotalTimeView(homeViewModel: homeViewModel)
+    .onAppear {
+      homeViewModel.send(.onAppear)
+    }
 }

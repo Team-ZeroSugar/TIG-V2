@@ -24,11 +24,11 @@ final class StubDailyScheduleRepository: DailyScheduleRepository {
   }
   
   func updateDailySchedule(
-    dailySchedule: DailySchedule,
+    date: Date,
     timeSlots: [TimeSlot]
   ) {
     if let index = dailySchedules.firstIndex(
-      where: { $0.date == dailySchedule.date }
+      where: { $0.date == date }
     ) {
       var updatedSchedule = dailySchedules[index]
       updatedSchedule.timeSlots = timeSlots

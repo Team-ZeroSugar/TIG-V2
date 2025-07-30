@@ -45,7 +45,7 @@ struct ScrollableTabBar: View {
         scrollPosition = $1
       }
     }
-    .background(.gray01)
+    .background(.backgroundNormal)
   }
   
   // MARK: - (F)TabBar Button
@@ -60,8 +60,8 @@ struct ScrollableTabBar: View {
             .frame(width: (size.width) / 2)
             .foregroundStyle(
               homeViewModel.state.selectedTab == tab
-              ? .gray06
-              : .gray03
+              ? .contentStrong
+              : .contentAlternative
             )
         }
       }
@@ -71,10 +71,10 @@ struct ScrollableTabBar: View {
       ZStack(alignment: .bottomLeading) {
         Rectangle()
           .frame(height: 0.5)
-          .foregroundStyle(.gray02)
+          .foregroundStyle(.borderNormal)
         Rectangle()
           .frame(width: size.width / 2, height: 2)
-          .foregroundStyle(.blueMain)
+          .foregroundStyle(.primaryNormal)
           .offset(x: selectedTabOffset)
       }
       .animation(.snappy, value: selectedTabOffset)
@@ -91,7 +91,7 @@ struct ScrollableTabBar: View {
             case .available:
               AvailableTimeView(homeViewModel: homeViewModel)
             case .total:
-              Text("하루시간")
+              TotalTimeView(homeViewModel: homeViewModel)
             }
           }
           .frame(width: size.width)
