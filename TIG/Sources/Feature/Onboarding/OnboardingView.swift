@@ -46,7 +46,6 @@ struct OnboardingView: View {
           type: currentPage == 2 ? .setSleepTime : .next
         ) {
           if currentPage == 2 {
-            viewModel.send(.finishOnboarding)
             finishedOnboarding = true
           } else {
             self.nextPage()
