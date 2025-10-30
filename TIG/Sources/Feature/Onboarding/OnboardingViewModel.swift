@@ -10,43 +10,28 @@ import Foundation
 @Observable
 final class OnboardingViewModel {
   struct State {
-    var currentIndex: Int = 0 {
-      didSet {
-        if currentIndex == OnboardingContent.allCases.count - 1 {
-          isFinished = true
-        }
-      }
-    }
-    var currentContent: OnboardingContent {
-      OnboardingContent.allCases[currentIndex]
-    }
-    var isLastPage: Bool {
-      currentIndex == OnboardingContent.allCases.count - 1
-    }
-    var isFinished: Bool = false
+    var isWakeupMode: Bool = true
+    var wakeUpTime: Int = 0
+    var bedTime: Int = 0
   }
   
   enum Action {
-    case nextOnboarding
-    case finishOnboarding
+    case setWakeUpTime(Int)
+    case setBedTime(Int)
   }
   
   private(set) var state: State = .init()
   
+  private let appConfigRepository: AppConfigRepository = DIContainer.shared.resolve()
+  
   func send(_ action: Action) {
     switch action {
-    case .nextOnboarding:
-      nextButtonTapped()
-    case .finishOnboarding:
-      break
-    }
-  }
-}
-
-extension OnboardingViewModel {
-  private func nextButtonTapped() {
-    if state.currentIndex < OnboardingContent.allCases.count - 1 {
-      state.currentIndex += 1
+    case .setWakeUpTime(let timeString):
+      state.wakeUpTime = timeString
+      state.isWakeupMode = false
+    case .setBedTime(let timeString):
+      state.bedTime = timeString
+      appConfigRepository.setOnboardingCompleted(wakeupTime: state.wakeUpTime, bedTime: state.bedTime)
     }
   }
 }
