@@ -10,13 +10,22 @@ import SwiftUI
 @main
 struct TIGApp: App {
   
+  @AppStorage(
+    UserDefaultsKey.isOnboarding,
+    store: UserDefaults(suiteName: "group.com.zerosugar.TIG.appgroup")
+  ) private var isOnboarding: Bool = true
+  
   init() {
     DIContainer.configure()
   }
   
   var body: some Scene {
     WindowGroup {
-      HomeView()
+      if isOnboarding {
+        OnboardingView()
+      } else {
+        HomeView()
+      }
     }
   }
 }
